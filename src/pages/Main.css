@@ -17,9 +17,7 @@
 .main-content-container {
   width: 80%;
   max-width: 1200px;
-  background-color: white;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
+  background-color: #fffdd8;
   padding: 5px;
   text-align: left;
   position: relative;
