@@ -105,64 +105,84 @@ function Main() {
       <NavBar />
       <div className="main-content">
         <div className="main-content-container">
-          <div className="social-media-bar">
-            <div className="social-link">
-              <img src="/images/youtube-icon.png" alt="YouTube" />
-              <span>YouTube</span>
+          {/* Left side containers */}
+          <div className="left-side">
+            <div className="social-media-bar">
+              <div className="social-link">
+                <img src="/images/youtube-icon.png" alt="YouTube" />
+                <span>YouTube</span>
+              </div>
+              <div className="social-link">
+                <img src="/images/twitch-icon.png" alt="Twitch" />
+                <span>Twitch</span>
+              </div>
+              <div className="social-link">
+                <img src="/images/instagram-icon.png" alt="Instagram" />
+                <span>Instagram</span>
+              </div>
             </div>
-            <div className="social-link">
-              <img src="/images/twitch-icon.png" alt="Twitch" />
-              <span>Twitch</span>
-            </div>
-            <div className="social-link">
-              <img src="/images/instagram-icon.png" alt="Instagram" />
-              <span>Instagram</span>
+
+            <div className="comment-section">
+              <div className="comments-list">
+                {comments.map(comment => (
+                  <div key={comment.id} className="comment">
+                    <div className="comment-header">
+                      <div className="comment-text">{comment.text}</div>
+                      <div className="reply-button-container">
+                        <button 
+                          className="reply-button"
+                          onClick={() => setReplyTo({ commentId: comment.id })}
+                        >
+                          Reply
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {replyTo?.commentId === comment.id && !replyTo?.replyId && (
+                      <div className="reply-input">
+                        <input
+                          type="text"
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder="Write a reply..."
+                        />
+                        <button onClick={() => handleAddReply(comment.id)}>Submit</button>
+                      </div>
+                    )}
+
+                    <div className="replies">
+                      {renderReplies(comment.replies, comment.id)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="comment-input">
+                <input
+                  type="text"
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  placeholder="Write a comment..."
+                />
+                <button onClick={handleAddComment}>Submit</button>
+              </div>
             </div>
           </div>
 
-          <div className="comment-section">
-            <div className="comments-list">
-              {comments.map(comment => (
-                <div key={comment.id} className="comment">
-                  <div className="comment-header">
-                    <div className="comment-text">{comment.text}</div>
-                    <div className="reply-button-container">
-                      <button 
-                        className="reply-button"
-                        onClick={() => setReplyTo({ commentId: comment.id })}
-                      >
-                        Reply
-                      </button>
-                    </div>
-                  </div>
-                  
-                  {replyTo?.commentId === comment.id && !replyTo?.replyId && (
-                    <div className="reply-input">
-                      <input
-                        type="text"
-                        value={replyText}
-                        onChange={(e) => setReplyText(e.target.value)}
-                        placeholder="Write a reply..."
-                      />
-                      <button onClick={() => handleAddReply(comment.id)}>Submit</button>
-                    </div>
-                  )}
-
-                  <div className="replies">
-                    {renderReplies(comment.replies, comment.id)}
-                  </div>
-                </div>
-              ))}
+          {/* Center containers */}
+          <div className="center-side">
+            <div className="place-container">
+              {/* Place container content */}
             </div>
+            <div className="advertisement-container">
+              {/* Advertisement content */}
+            </div>
+          </div>
 
-            <div className="comment-input">
-              <input
-                type="text"
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Write a comment..."
-              />
-              <button onClick={handleAddComment}>Submit</button>
+          {/* Right side container */}
+          <div className="right-side">
+            <div className="chat-container">
+              {/* Chat content */}
             </div>
           </div>
         </div>

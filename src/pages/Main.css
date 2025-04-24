@@ -20,16 +20,24 @@
   background-color: white;
   border-left: 1px solid #ccc;
   border-right: 1px solid #ccc;
-  padding: 40px;
+  padding: 5px;
   text-align: left;
   position: relative;
   min-height: 100%;
   display: flex;
+  gap: 5px;
+}
+
+/* Left side containers */
+.left-side {
+  width: 18%;
+  display: flex;
   flex-direction: column;
+  gap: 5px;
+  margin-bottom: 5px;
 }
 
 .social-media-bar {
-  width: 18%;
   height: 30%;
   background-color: #f8f8f8;
   border: 1px solid #ccc;
@@ -38,9 +46,6 @@
   display: flex;
   flex-direction: column;
   gap: 15px;
-  position: absolute;
-  top: 5px;
-  left: 5px;
 }
 
 .social-link {
@@ -69,19 +74,13 @@
 }
 
 .comment-section {
-  width: 18%;
-  height: 64%;
-  position: absolute;
-  bottom: 5px;
-  left: 5px;
+  height: 65%;
   background-color: #f8f8f8;
   border: 1px solid #ccc;
   border-radius: 8px;
   padding: 5px;
-  padding-top: 0px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
   overflow: hidden;
 }
 
@@ -278,4 +277,53 @@
 
 .comments-list::-webkit-scrollbar-thumb:hover {
   background: #555;
+}
+
+/* Center containers */
+.center-side {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.place-container {
+  height: 65%;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.advertisement-container {
+  height: 30%;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Right side container */
+.right-side {
+  width: 24%;
+  height: 97%;
+  margin-bottom: 5px;
+}
+
+.chat-container {
+  height: 100%;
+  background-color: #f8f8f8;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
