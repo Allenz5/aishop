@@ -1,0 +1,55 @@
+.simulator-container {
+  width: 100%;
+  font-family: monospace;
+  background-color: white;
+}
+
+.simulator-content {
+  display: flex;
+  gap: 10px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.simulator-text {
+  flex: 1;
+}
+
+.simulator-line {
+  margin: 8px 0;
+  font-size: 10px;
+  color: #333;
+}
+
+.simulator-image {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding-top: 8px;
+}
+
+.simulator-image img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+}
+
+.processing-section {
+  margin-bottom: 20px;
+}
+
+.save-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #1a1356;
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.save-button:hover {
+  background-color: #2a2366;
+}
