@@ -1,7 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import NavBar from '../components/NavBar';
 import './Agent.css';
 import ProcessingSimulator from '../components/ProcessingSimulator';
+// Import the agent image
+import agentImage from '../components/Images/agent.gif';
 
 function Agent() {
   const [showForm, setShowForm] = useState(false);
@@ -10,6 +12,7 @@ function Agent() {
   const [showProcessing, setShowProcessing] = useState(false);
   const [isProcessingComplete, setIsProcessingComplete] = useState(false);
   const [simulatorImage, setSimulatorImage] = useState(null);
+  const [processingKey, setProcessingKey] = useState('initial');
   const [currentAgent, setCurrentAgent] = useState({
     name: '',
     description: '',
@@ -18,19 +21,30 @@ function Agent() {
     knowledgeFileName: ''
   });
 
+  // Add class to body when component mounts to prevent outer scrolling
+  useEffect(() => {
+    // Add the class when component mounts
+    document.body.classList.add('agent-page-active');
+    
+    // Remove the class when component unmounts
+    return () => {
+      document.body.classList.remove('agent-page-active');
+    };
+  }, []);
+
   const handleKnowledgeUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Check if the file is a Word document
-      if (file.type === 'application/msword' || 
-          file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+      // Check if the file is a text file or PDF
+      if (file.type === 'text/plain' || 
+          file.type === 'application/pdf') {
         setCurrentAgent(prev => ({
           ...prev,
           knowledge: file,
           knowledgeFileName: file.name
         }));
       } else {
-        alert('Please upload a Word document (.doc or .docx)');
+        alert('Please upload a text file (.txt) or PDF (.pdf)');
       }
     }
   };
@@ -46,14 +60,23 @@ function Agent() {
   const handleSubmit = useCallback(() => {
     if (currentAgent.name) {
       if (!showProcessing) {
+        // Generate a unique key for the processing simulator to ensure it remounts
+        setProcessingKey(`agent-sim-${Date.now()}`);
         setShowProcessing(true);
       } else if (isProcessingComplete) {
         const agentToSave = {
           ...currentAgent,
-          image: simulatorImage // Save the simulator image
+          image: agentImage // Use the imported agent.gif image
         };
         
-        setAgents(prev => [...prev, agentToSave]);
+        // Update agents state
+        const updatedAgents = [...agents, agentToSave];
+        setAgents(updatedAgents);
+        
+        // Store variables for Main page to react
+        localStorage.setItem('agentsGenerated', 'true');
+        localStorage.setItem('agentCount', updatedAgents.length.toString());
+        
         setShowForm(false);
         setShowProcessing(false);
         setIsProcessingComplete(false);
@@ -67,80 +90,120 @@ function Agent() {
         });
       }
     }
-  }, [currentAgent, showProcessing, isProcessingComplete, simulatorImage]);
+  }, [currentAgent, showProcessing, isProcessingComplete, simulatorImage, agents]);
+
+  // Function to handle closing the form
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setShowProcessing(false);
+    setIsProcessingComplete(false);
+    setCurrentAgent({
+      name: '',
+      description: '',
+      role: 'sales',
+      knowledge: null,
+      knowledgeFileName: ''
+    });
+  };
 
   return (
-    <div className="main-container">
+    <div className="agent-page-container">
       <NavBar />
-      <div className="main-content">
+      <div className="agent-page-content">
         <div className="agent-container">
-          <div className="agent-list">
-            <div className="filter-section">
-              <div className="sort-options">
-                <label>
-                  <input
-                    type="radio"
-                    name="sort"
-                    value="time"
-                    checked={sortOption === 'time'}
-                    onChange={(e) => setSortOption(e.target.value)}
-                  />
-                  Time
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    name="sort"
-                    value="az"
-                    checked={sortOption === 'az'}
-                    onChange={(e) => setSortOption(e.target.value)}
-                  />
-                  A-Z
-                </label>
-              </div>
+          <h2 className="agent-title">MANAGE YOUR AGENTS</h2>
+          
+          <div className="agent-filter-section">
+            <div className="agent-sort-options">
+              <label>
+                <input
+                  type="radio"
+                  name="sort"
+                  value="time"
+                  checked={sortOption === 'time'}
+                  onChange={(e) => setSortOption(e.target.value)}
+                />
+                TIME
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="sort"
+                  value="az"
+                  checked={sortOption === 'az'}
+                  onChange={(e) => setSortOption(e.target.value)}
+                />
+                A-Z
+              </label>
             </div>
+          </div>
 
+          <div className="agent-list">
             {agents.map((agent, index) => (
               <div key={index} className="agent-item" onClick={() => setShowForm(true)}>
-                {agent.image && (
-                  <img src={agent.image} alt={agent.name} className="agent-thumbnail" />
-                )}
+                <img src={agentImage} alt={agent.name} className="agent-item-thumbnail" />
                 <div className="agent-info">
                   <span className="agent-name">{agent.name}</span>
-                  <span className="agent-role">{agent.role}</span>
+                  <span className="agent-role">{agent.role.toUpperCase()}</span>
                   {agent.knowledgeFileName && (
-                    <span className="agent-knowledge">Doc: {agent.knowledgeFileName}</span>
+                    <span className="agent-knowledge-file">Doc: {agent.knowledgeFileName}</span>
                   )}
                 </div>
               </div>
             ))}
+            
             <div className="add-agent-bar" onClick={() => setShowForm(true)}>
-              <span className="add-icon">+</span>
-              <span>Add New Agent</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>ADD NEW AGENT</span>
             </div>
           </div>
 
           {showForm && (
             <div className="agent-form">
-              <div className="form-group">
-                <label>Name:</label>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <h3 className="agent-form-title">AGENT DETAILS</h3>
+                <button 
+                  onClick={handleCloseForm}
+                  style={{ 
+                    background: 'none', 
+                    border: 'none', 
+                    cursor: 'pointer', 
+                    fontSize: '1.2rem',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              
+              <div className="agent-form-group">
+                <label>NAME</label>
                 <input 
                   type="text" 
+                  className="agent-input-field"
+                  placeholder="Agent name"
                   value={currentAgent.name}
                   onChange={(e) => setCurrentAgent(prev => ({...prev, name: e.target.value}))}
                 />
               </div>
-              <div className="form-group">
-                <label>Description:</label>
+              
+              <div className="agent-form-group">
+                <label>DESCRIPTION</label>
                 <input 
-                  type="text"
+                  type="text" 
+                  className="agent-input-field"
+                  placeholder="Describe the agent's purpose"
                   value={currentAgent.description}
                   onChange={(e) => setCurrentAgent(prev => ({...prev, description: e.target.value}))}
                 />
               </div>
-              <div className="form-group">
-                <label>Role:</label>
-                <div className="role-options">
+              
+              <div className="agent-form-group">
+                <label>ROLE</label>
+                <div className="agent-role-options">
                   <label>
                     <input
                       type="radio"
@@ -149,7 +212,7 @@ function Agent() {
                       checked={currentAgent.role === 'sales'}
                       onChange={(e) => setCurrentAgent(prev => ({...prev, role: e.target.value}))}
                     />
-                    Sales
+                    SALES
                   </label>
                   <label>
                     <input
@@ -159,7 +222,7 @@ function Agent() {
                       checked={currentAgent.role === 'customer service'}
                       onChange={(e) => setCurrentAgent(prev => ({...prev, role: e.target.value}))}
                     />
-                    Customer Service
+                    CUSTOMER SERVICE
                   </label>
                   <label>
                     <input
@@ -173,35 +236,51 @@ function Agent() {
                   </label>
                 </div>
               </div>
-              <div className="form-group">
-                <label>Knowledge (Word Document):</label>
-                <div className="file-upload-container">
-                  <input 
-                    type="file"
-                    accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    onChange={handleKnowledgeUpload}
-                    className="file-input"
-                  />
-                  {currentAgent.knowledgeFileName && (
-                    <div className="file-name">
-                      Selected file: {currentAgent.knowledgeFileName}
-                    </div>
-                  )}
+              
+              <div className="agent-divider"><span>UPLOAD DOCUMENT</span></div>
+              
+              <div className="agent-form-group">
+                <label>KNOWLEDGE BASE</label>
+                <div className="agent-upload-section">
+                  <div className="agent-file-input-container">
+                    <label className="agent-file-input-label">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginRight: '8px'}}>
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                      </svg>
+                      SELECT DOCUMENT
+                      <input 
+                        type="file"
+                        accept=".txt,.pdf,text/plain,application/pdf"
+                        onChange={handleKnowledgeUpload}
+                        className="agent-file-input"
+                      />
+                    </label>
+                    {currentAgent.knowledgeFileName && (
+                      <div className="agent-file-name">
+                        Selected file: {currentAgent.knowledgeFileName}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-
+              
               {showProcessing && (
-                <div className="processing-section">
+                <div className="agent-processing-simulator">
+                  {/* Using the stored key to ensure proper remounting */}
                   <ProcessingSimulator 
+                    key={processingKey}
                     variant="training" 
                     onComplete={handleProcessingComplete}
                     onImageReady={handleSimulatorImage}
+                    duration={1.68} // 168 seconds for agent training
                   />
                 </div>
               )}
 
-              <button className="save-button" onClick={handleSubmit}>
-                {!showProcessing ? 'Submit' : (isProcessingComplete ? 'Save' : 'Submit')}
+              <button className="agent-submit-button" onClick={handleSubmit}>
+                {!showProcessing ? 'SUBMIT AGENT' : (isProcessingComplete ? 'SAVE AGENT' : 'SUBMIT AGENT')}
               </button>
             </div>
           )}

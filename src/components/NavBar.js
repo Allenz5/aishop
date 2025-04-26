@@ -15,7 +15,9 @@ function NavBar() {
   return (
     <div className="top-bars">
       <div className="logo-bar">
-        <div className="logo-placeholder"></div>
+        <div className="logo-content">
+          <h1 className="logo-text">VIRTUAL STORE</h1>
+        </div>
       </div>
       <div className="nav-bar">
         <div className="nav-buttons">
@@ -23,7 +25,7 @@ function NavBar() {
             className={currentPath === 'main' ? 'active' : ''} 
             onClick={() => handleButtonClick('main')}
           >
-            Main
+            Dashboard
           </button>
           <button 
             className={currentPath === 'space' ? 'active' : ''} 

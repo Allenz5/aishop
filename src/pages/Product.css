@@ -1,250 +1,427 @@
-.main-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background-color: #f5f5f5;
-  font-family: Arial, sans-serif;
+/* Product-specific styles with proper namespacing */
+
+/* 
+ * This CSS is specifically for the Product page and won't affect the Space page
+ * because it's imported only in Product.js and uses product-specific class names
+ */
+
+/* Special body class that can be added when the Product component mounts */
+body.product-page-active {
+  overflow: hidden !important;
 }
 
-.main-content {
-  flex: 1;
-  background-color: #fffdd8;
+/* Override only the container elements to avoid conflicts */
+.product-page-container {
+  height: 100vh;
+  max-height: 100vh; /* Add max-height to strictly contain content */
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  background-color: #ffffff;
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
+  width: 100%;
+  overflow: hidden !important; /* Prevent all scrolling at this level with !important */
+  position: relative; /* Ensure proper positioning context */
+  box-sizing: border-box; /* Include padding in width calculations */
+}
+
+.product-page-content {
+  flex: 1;
+  flex-shrink: 0; /* Prevent flexbox from shrinking this container */
   padding: 0;
-  min-height: calc(100vh - 110px);
+  background-color: #ffffff;
+  height: calc(100vh - 110px); /* Fixed height instead of min-height */
+  max-height: calc(100vh - 110px); /* Maximum height constraint */
+  width: 100%;
+  /* Remove the scrollbar at this level */
+  overflow: hidden;
+  position: relative;
 }
 
 .product-container {
-  width: 80%;
-  max-width: 1200px;
-  background-color: white;
-  border-left: 1px solid #ccc;
-  border-right: 1px solid #ccc;
-  padding: 40px;
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  max-height: 100%; /* Ensure container doesn't exceed parent height */
+  margin: 0;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  /* Remove min-height to prevent forcing scroll when not needed */
+  /* min-height: 100%; */
+  padding: 48px 24px; /* Reduced horizontal padding for better responsive behavior */
   text-align: left;
-  position: relative;
-  min-height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 32px;
+  /* Remove scrolling at this level */
+  overflow: hidden;
+  /* Removed align-items: center to allow left alignment */
+  position: relative;
+  box-sizing: border-box; /* Include padding in width calculations */
+}
+
+.product-title {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  max-width: 640px;
+  text-align: left;
+  /* Increased margin from left edge */
+  margin-left: 64px;
+}
+
+.product-form-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  text-align: left;
 }
 
 .product-list {
-  width: 60%;
+  width: 100%;
+  max-width: 640px;
   min-height: 100%;
   display: flex;
   flex-direction: column;
+  gap: 16px;
+  /* Increased margin from left edge */
+  margin-left: 64px;
+  /* Enable scrolling only for the list */
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Add padding to prevent content from being cut off */
+  padding-bottom: 32px;
 }
 
 .add-product-bar {
   display: flex;
   align-items: center;
-  padding: 15px;
-  border: 1px dashed #ccc;
+  padding: 14px;
+  border: 1px solid #000;
   cursor: pointer;
-  margin-bottom: 20px;
-  width: 400px;
+  margin-top: 16px;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.15s ease-in;
 }
 
-.add-icon {
-  font-size: 24px;
-  margin-right: 10px;
-  color: #666;
+.add-product-bar:hover {
+  background: #f5f5f5;
 }
 
 .product-form {
   position: absolute;
   right: 0;
   top: 0;
-  width: 500px;
-  background-color: white;
-  border-left: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-  padding: 20px;
-  height: 90%;
-  box-shadow: -2px 0 5px rgba(0,0,0,0.1);
-  overflow-y: scroll;
+  /* Increased width from 600px to 700px */
+  width: 700px;
+  max-width: 50%; /* Increased from 40% to 50% */
+  min-width: 500px; /* Increased from 450px */
+  height: 100%;
+  background-color: #fff;
+  border-left: 1px solid #000;
+  padding: 48px 32px;
+  overflow-y: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
+  gap: 24px;
+  box-shadow: -4px 0 24px rgba(0,0,0,0.05);
+  box-sizing: border-box; /* Include padding in width calculations */
 }
 
-.form-group {
-  margin-bottom: 15px;
-  flex-shrink: 0;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 3px;
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-}
-
-.form-group textarea {
-  min-height: 60px;
-  resize: vertical;
-}
-
-.save-button {
-  padding: 8px 20px;
-  background-color: #1a1356;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 15px;
-  font-size: 14px;
-  flex-shrink: 0;
-  margin-bottom: 20px;
-}
-
-.product-item {
+.product-form-group {
+  margin-bottom: 0;
+  text-align: left;
   display: flex;
-  align-items: center;
-  padding: 15px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
+  flex-direction: column;
+  gap: 8px;
+  width: 85%; /* Reduced from 100% to create spacing on the right */
+  margin-right: auto; /* Ensures alignment to the left */
+}
+
+.product-form-group label {
+  display: block;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: #000;
+}
+
+.product-input-field {
+  width: 100%;
+  font-size: 1rem;
+  padding: 14px;
+  border: 1px solid #000;
+  outline: none;
+  border-radius: 0;
+  background: #fff;
+  color: #000;
+  transition: all 0.15s ease-in;
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
+}
+
+.product-input-field:focus {
+  border-color: #111;
+  background-color: #f9f9f9;
+}
+
+.product-textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
+}
+
+.product-upload-section {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.product-file-input-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.product-file-input-label {
+  display: inline-block;
+  padding: 14px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
-  width: 400px;
+  border-radius: 0;
+  transition: all 0.15s ease-in;
+}
+
+.product-file-input-label:hover {
+  background: #f5f5f5;
+}
+
+.product-file-input {
+  position: absolute;
+  left: -9999px;
+}
+
+.product-file-name {
+  margin-left: 12px;
+  font-size: 0.9rem;
+}
+
+.product-image-preview {
+  width: 100%;
+  max-width: 140px;
+  border: 1px solid #000;
+  padding: 8px;
+  box-shadow: 4px 4px 0 #000;
+}
+
+.product-image-preview img {
+  width: 100%;
+  height: 140px;
+  display: block;
+  object-fit: cover;
+  background-color: #f9f9f9;
+}
+
+.product-image-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.product-thumbnail-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  max-width: 100%;
 }
 
 .product-thumbnail {
   width: 50px;
   height: 50px;
+  border: 1px solid #000;
   object-fit: cover;
-  margin-right: 15px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.product-submit-button {
+  margin-top: 16px;
+  background: #000;
+  color: #fff;
+  padding: 14px 28px;
+  border: 1px solid #000;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.15s ease-in;
+  align-self: flex-start;
+}
+
+.product-submit-button:hover {
+  background: #111;
+}
+
+.product-btn-outline {
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
+  padding: 14px;
+  text-transform: uppercase;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 0;
+  transition: background 0.15s ease-in;
+}
+
+.product-btn-outline:hover {
+  background: #f5f5f5;
+}
+
+.product-filter-section {
+  width: 100%;
+  max-width: 640px;
+  margin-bottom: 16px;
+  /* Increased margin from left edge */
+  margin-left: 64px;
+}
+
+.product-sort-options {
+  display: flex;
+  gap: 20px;
+}
+
+.product-sort-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.product-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #666;
+  margin: 16px 0;
+  width: 85%; /* Reduced from 100% to match form groups */
+}
+
+.product-divider::before,
+.product-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #ddd;
+}
+
+.product-item {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #000;
+  cursor: pointer;
+  transition: all 0.15s ease-in;
+}
+
+.product-item:hover {
+  background: #f9f9f9;
+  box-shadow: 4px 4px 0 #000;
+  transform: translate(-2px, -2px);
+}
+
+.product-item-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border: 1px solid #000;
+  margin-right: 16px;
 }
 
 .product-info {
   display: flex;
   flex-direction: column;
   flex: 1;
+  gap: 4px;
 }
 
 .product-name {
-  font-weight: bold;
-  font-size: 16px;
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
 }
 
 .product-price {
-  color: #666;
-  font-size: 14px;
-  text-align: right;
-}
-
-.image-preview {
-  max-width: 80px;
-  max-height: 80px;
-  margin-top: 8px;
-}
-
-.image-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 10px;
-  margin-top: 10px;
-}
-
-.image-preview-container {
-  position: relative;
-  width: 100%;
-  padding-bottom: 100%; /* Creates a square aspect ratio */
-}
-
-.image-preview {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 1px solid #ccc;
-}
-
-.submit-button {
-  padding: 8px 20px;
-  background-color: #1a1356;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: 400px; /* Match the width of add-product-bar */
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.filter-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-.sort-options {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 20px;
-}
-
-.sort-options label {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.sort-options input[type="radio"] {
-  margin: 0;
-  cursor: pointer;
-}
-
-/* Add custom scrollbar styling */
-.product-form::-webkit-scrollbar {
-  width: 8px;
-}
-
-.product-form::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.product-form::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.product-form::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-.product-link {
-  font-size: 14px;
-  margin-top: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .product-link a {
-  color: #1a1356;
+  color: #000;
   text-decoration: none;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .product-link a:hover {
   text-decoration: underline;
 }
 
-/* Make sure the URL input has the same styling as other inputs */
-.form-group input[type="url"] {
+/* Specific styling for the product processing container */
+.product-processing-simulator {
+  margin-top: 16px;
+  padding: 24px;
+  border: 1px solid #000;
+  box-shadow: 4px 4px 0 #000;
+  width: 85%; /* Reduced from 100% to match other elements */
+}
+
+/* Make the simulator image thinner inside product form */
+.product-processing-simulator .simulator-image-container {
   width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
+  max-width: 85%;
+}
+
+.product-processing-simulator .simulator-image {
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 16/9; /* Thinner aspect ratio */
+}
+
+/* Fixed the loading bar animation issue by removing animation: none !important */
+.product-processing-simulator .loading-bar {
+  transition: width 0.3s ease-out;
+  will-change: width;
+  -webkit-transition: width 0.3s ease-out;
+  /* Removed animation: none !important */
 }

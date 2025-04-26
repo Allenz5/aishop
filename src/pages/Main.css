@@ -1,29 +1,46 @@
+/* Reset full height properly */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #111;
+}
+
 .main-container {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #f5f5f5;
-  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
   width: 100%;
+  overflow: hidden;
 }
 
 .main-content {
   flex: 1;
-  padding: 20px;
-  background-color: #fffdd8;
-  min-height: calc(100vh - 110px);
+  padding: 24px;
+  background-color: #ffffff;
+  width: 100%;
+  overflow: hidden;
 }
 
 .main-content-container {
-  width: 80%;
-  max-width: 1200px;
-  background-color: #fffdd8;
-  padding: 5px;
+  height: 100%;
+  margin: 0 auto;
+  background-color: #ffffff;
+  padding: 0;
   text-align: left;
   position: relative;
   min-height: 100%;
   display: flex;
-  gap: 5px;
+  gap: 24px;
+  overflow: hidden;
 }
 
 /* Left side containers */
@@ -31,87 +48,96 @@
   width: 18%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
+  gap: 24px;
 }
 
 .social-media-bar {
-  height: 30%;
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
+  height: 300px;
+  overflow-y: auto;
 }
 
 .social-link {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px;
-  border-radius: 4px;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 0;
+  border: 1px solid transparent;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.15s ease-in;
 }
 
 .social-link:hover {
-  background-color: #eaeaea;
+  background-color: #f5f5f5;
+  border: 1px solid #000;
 }
 
-.social-link img {
+.social-link svg {
   width: 24px;
   height: 24px;
-  object-fit: contain;
+  min-width: 24px;
+  color: #000;
 }
 
 .social-link span {
   font-size: 14px;
-  color: #333;
+  color: #000;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .comment-section {
-  height: 65%;
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  padding: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  flex: 1;
+  min-height: 300px;
 }
 
 .comments-list {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding-top: 5px;
-  padding-left: 5px; 
+  gap: 16px;
   flex: 1;
   overflow-y: auto;
-  padding-right: 5px;
+  padding-right: 8px;
   min-height: 0;
 }
 
 .comment {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   flex-shrink: 0;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 16px;
 }
 
 .comment-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
   position: relative;
 }
 
 .reply-button-container {
   opacity: 0;
-  transition: opacity 0.2s;
+  transition: opacity 0.15s ease-in;
   position: absolute;
   right: 0;
   top: 0;
@@ -126,202 +152,411 @@
 }
 
 .comment-text {
-  font-size: 13px;
-  color: #333;
-  line-height: 1.4;
+  font-size: 14px;
+  color: #000;
+  line-height: 1.5;
   flex: 1;
 }
 
 .reply-button {
   background: none;
-  border: none;
-  color: #666;
+  border: 1px solid #000;
+  color: #000;
   font-size: 11px;
   cursor: pointer;
-  padding: 0;
+  padding: 4px 8px;
   white-space: nowrap;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.15s ease-in;
 }
 
 .reply-button:hover {
-  color: #333;
+  background-color: #000;
+  color: #fff;
 }
 
 .reply-input {
   display: flex;
-  gap: 5px;
-  margin-top: 5px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .reply-input input {
   flex: 1;
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  font-size: 11px;
-  height: 15px;
+  padding: 10px 14px;
+  border: 1px solid #000;
+  border-radius: 0;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+  transition: all 0.15s ease-in;
+}
+
+.reply-input input:focus {
+  border-color: #111;
+  background-color: #f9f9f9;
+  outline: none;
 }
 
 .reply-input button {
-  padding: 4px 8px;
-  background-color: #1a1356;
+  padding: 10px 14px;
+  background-color: #000;
   color: white;
   border: none;
-  border-radius: 3px;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 11px;
-  height: 24px;
+  font-size: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.15s ease-in;
+}
+
+.reply-input button:hover {
+  background-color: #111;
 }
 
 .replies {
-  margin-left: 20px;
+  margin-left: 24px;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 8px;
 }
 
 .reply {
-  font-size: 13px;
-  color: #333;
-  padding: 1px;
-  background-color: #f8f8f8;
-  border-radius: 4px;
-  margin-top: 1px;
+  font-size: 14px;
+  color: #000;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 0;
+  margin-top: 4px;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .reply .comment-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
 }
 
 .reply .comment-text {
-  font-size: 12px;
+  font-size: 13px;
   flex: 1;
 }
 
 .reply .reply-button {
   font-size: 10px;
-  color: #666;
-  padding: 0;
-  margin-left: auto;
+  padding: 3px 6px;
 }
 
 .reply .reply-input {
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .reply .reply-input input {
-  height: 15px;
-  font-size: 10px;
+  font-size: 13px;
+  padding: 8px 12px;
 }
 
 .reply .reply-input button {
-  height: 15px;
   font-size: 10px;
-  padding: 0 6px;
+  padding: 8px 12px;
 }
 
 .comment-input {
   display: flex;
-  gap: 5px;
+  gap: 8px;
   margin-top: auto;
-  padding-top: 10px;
-  border-top: 1px solid #ccc;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
   flex-shrink: 0;
 }
 
 .comment-input input {
   flex: 1;
-  padding: 4px 8px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  font-size: 11px;
-  height: 15px;
+  padding: 14px;
+  border: 1px solid #000;
+  border-radius: 0;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+  transition: all 0.15s ease-in;
+}
+
+.comment-input input:focus {
+  border-color: #111;
+  background-color: #f9f9f9;
+  outline: none;
 }
 
 .comment-input button {
-  padding: 4px 8px;
-  background-color: #1a1356;
+  padding: 14px;
+  background-color: #000;
   color: white;
   border: none;
-  border-radius: 3px;
+  border-radius: 0;
   cursor: pointer;
-  font-size: 11px;
-  height: 24px;
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 500;
+  transition: all 0.15s ease-in;
 }
 
 .comment-input button:hover {
-  background-color: #2a2366;
+  background-color: #111;
 }
 
 /* Add custom scrollbar styling */
 .comments-list::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 .comments-list::-webkit-scrollbar-track {
   background: #f1f1f1;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 .comments-list::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 3px;
+  background: #000;
+  border-radius: 0;
 }
 
 .comments-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #111;
 }
 
 /* Center containers */
 .center-side {
-  width: 60%;
+  width: 62%;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  margin-bottom: 5px;
+  gap: 24px;
 }
 
 .place-container {
-  height: 65%;
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  flex: 2;
+  aspect-ratio: 16/9;
 }
 
 .advertisement-container {
-  height: 30%;
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px;
+  background-color: #ffffff;
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  flex: 1;
+  min-height: 200px;
 }
 
 /* Right side container */
 .right-side {
-  width: 24%;
-  height: 97%;
-  margin-bottom: 5px;
+  width: 20%;
 }
 
-.chat-container {
-  height: 100%;
-  background-color: #f8f8f8;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  padding: 5px;
+/* Tab styles */
+.tabs-container {
+  background-color: #ffffff;
+  border: 1px solid #000;
+  border-radius: 0;
+  box-shadow: 4px 4px 0 #000;
   display: flex;
   flex-direction: column;
+  height: 100%;
+}
+
+.tabs-header {
+  display: flex;
+  border-bottom: 1px solid #000;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Helvetica Neue', 'Inter', sans-serif;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease-in;
+}
+
+.tab-button.active {
+  background-color: #000;
+  color: #fff;
+  font-weight: 700;
+}
+
+.tab-button:not(.active):hover {
+  background-color: #f5f5f5;
+}
+
+.tabs-content {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.tab-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Additional styles for new elements */
+.section-title, .container-title {
+  font-size: 1rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.container-title {
+  font-size: 1.2rem;
+  letter-spacing: -0.02em;
+}
+
+.no-comments {
+  font-size: 14px;
+  color: #666;
+  font-style: italic;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.comment-meta {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.comment-author {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: #666;
+}
+
+/* Empty state */
+.empty-state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 24px;
+  color: #666;
+  height: 100%;
+}
+
+.empty-state svg {
+  color: #aaa;
+  margin-bottom: 16px;
+  width: 32px;
+  height: 32px;
+}
+
+.empty-state p {
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+/* Store status styles */
+.store-status {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.status-message {
+  max-width: 480px;
+}
+
+.status-message h3 {
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
+}
+
+.status-message p {
+  font-size: 14px;
+  color: #444;
+  margin-bottom: 24px;
+}
+
+.progress-bar {
+  height: 8px;
+  width: 100%;
+  background-color: #f0f0f0;
+  border: 1px solid #000;
+  position: relative;
   overflow: hidden;
 }
+
+.progress-fill {
+  position: absolute;
+  height: 100%;
+  background-color: #000;
+  width: 30%;
+  animation: progress 2s infinite;
+}
+
+@keyframes progress {
+  0% { width: 0%; }
+  50% { width: 50%; }
+  100% { width: 100%; }
+}
+
+/* Ad stats */
+.ad-stats {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.stat-card {
+  flex: 1;
+  border: 1px solid #000;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat-card h4 {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0 0 8px 0;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
