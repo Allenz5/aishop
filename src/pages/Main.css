@@ -152,15 +152,20 @@ body {
 .ai-message-content {
   font-size: 14px;
   color: #333;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .ai-message-content p {
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0;
 }
 
 .ai-message-content p:last-child {
   margin-bottom: 0;
+}
+
+/* Style for bold text in messages */
+.ai-message-content p strong {
+  font-weight: 600;
 }
 
 .ai-suggestion-actions {
@@ -177,6 +182,9 @@ body {
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease-in;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .ai-action-button.accept {
@@ -184,13 +192,39 @@ body {
   color: #fff;
 }
 
-.ai-action-button.accept:hover {
+.ai-action-button.accept:hover:not(:disabled) {
   background-color: #222;
   transform: translateY(-1px);
 }
 
-.ai-action-button.reject:hover {
+.ai-action-button.reject:hover:not(:disabled) {
   background-color: #f0f0f0;
+}
+
+/* Selected button styles */
+.ai-action-button.selected {
+  position: relative;
+  opacity: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.ai-action-button.accept.selected {
+  background-color: #000;
+  color: white;
+}
+
+.ai-action-button.reject.selected {
+  background-color: #f0f0f0;
+  border-color: #000;
+}
+
+.ai-action-button.not-selected {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.check-icon {
+  margin-left: 2px;
 }
 
 .ai-input {
@@ -436,6 +470,14 @@ body {
   margin: 0 0 16px 0;
   padding-bottom: 8px;
   border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+}
+
+.ai-title-icon {
+  margin-right: 6px;
+  color: #000;
+  flex-shrink: 0;
 }
 
 .container-title {

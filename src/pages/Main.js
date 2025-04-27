@@ -32,8 +32,82 @@ function Main() {
   const [isPublishEnabled, setIsPublishEnabled] = useState(false);
   const [publishStatus, setPublishStatus] = useState('idle'); // 'idle', 'processing', 'published'
   const [publishedUrl, setPublishedUrl] = useState('');
+  const [aiMessages, setAiMessages] = useState([
+    {
+      id: 1,
+      name: 'StoreAI',
+      time: 'Just now',
+      content: 'Welcome to your new virtual store! I\'m StoreAI, your assistant that provides real-time advice, product insights, and customer trend analysis to help optimize your store performance.'
+    },
+    {
+      id: 2,
+      name: 'StoreAI',
+      time: 'Just now',
+      content: 'Would you like me to show you how to set up your store?',
+      actions: [
+        { label: 'Yes, please', value: 'yes' },
+        { label: 'I\'ll explore myself', value: 'no' }
+      ]
+    }
+  ]);
   const dragImageRef = useRef(null);
   const virtualSpaceRef = useRef(null);
+
+  // Function to handle AI button actions
+  const handleAiAction = (messageId, actionValue) => {
+    // Create a copy of the current messages
+    const updatedMessages = [...aiMessages];
+    
+    // Find the message with actions and remove the actions
+    const messageIndex = updatedMessages.findIndex(msg => msg.id === messageId);
+    if (messageIndex !== -1) {
+      // Clone the messages and update the one with action
+      const messagesCopy = [...updatedMessages];
+      
+      // Instead of removing actions, mark which one was selected
+      if (!messagesCopy[messageIndex].selectedAction) {
+        messagesCopy[messageIndex] = {
+          ...messagesCopy[messageIndex],
+          selectedAction: actionValue
+        };
+        
+        // Update the state immediately to show the selected button
+        setAiMessages(messagesCopy);
+        
+        // Add response after a slight delay
+        setTimeout(() => {
+          if (actionValue === 'yes') {
+            // Add detailed instructions when "Yes, please" is clicked
+            setAiMessages([
+              ...messagesCopy,
+              {
+                id: Date.now(),
+                name: 'StoreAI',
+                time: 'Just now',
+                content: 'Here\'s how to set up your store:\n\n' +
+                  '• **Add Products**: Select the Products tab on the right and add your items\n\n' +
+                  '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
+                  '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
+                  '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
+                  'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations. Feel free to ask if you need any assistance!'
+              }
+            ]);
+          } else {
+            // Just acknowledge when "I'll explore myself" is clicked
+            setAiMessages([
+              ...messagesCopy,
+              {
+                id: Date.now(),
+                name: 'StoreAI',
+                time: 'Just now',
+                content: 'Sounds good! I\'ll be here if you need any help.'
+              }
+            ]);
+          }
+        }, 800); // 800ms delay for natural feel
+      }
+    }
+  };
 
   // Effects for handling drag image creation
   useEffect(() => {
@@ -349,46 +423,63 @@ function Main() {
             </div>
 
             <div className="comment-section">
-              <h3 className="section-title">STORE AI ASSISTANT</h3>
+              <h3 className="section-title">
+                <svg className="ai-title-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                  <polyline points="7.5 4.21 12 6.81 16.5 4.21"></polyline>
+                  <polyline points="7.5 19.79 7.5 14.6 3 12"></polyline>
+                  <polyline points="21 12 16.5 14.6 16.5 19.79"></polyline>
+                  <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                  <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                STORE AI ASSISTANT
+              </h3>
               <div className="ai-assistant-container">
                 <div className="ai-messages">
-                  <div className="ai-message">
-                    <div className="ai-message-header">
-                      <span className="ai-name">StoreAI</span>
-                      <span className="message-time">Just now</span>
-                    </div>
-                    <div className="ai-message-content">
-                      <p>Welcome! I'm your AI store assistant. I'll help you manage your store and provide recommendations based on trends and customer behavior.</p>
-                    </div>
-                  </div>
-                  
-                  <div className="ai-message">
-                    <div className="ai-message-header">
-                      <span className="ai-name">StoreAI</span>
-                      <span className="message-time">Just now</span>
-                    </div>
-                    <div className="ai-message-content">
-                      <p>Halloween is coming up in a few weeks. Would you like me to suggest some seasonal changes to your store design?</p>
-                      <div className="ai-suggestion-actions">
-                        <button className="ai-action-button accept">Yes, show me</button>
-                        <button className="ai-action-button reject">Not now</button>
+                  {aiMessages.map(message => (
+                    <div className="ai-message" key={message.id}>
+                      <div className="ai-message-header">
+                        <span className="ai-name">{message.name}</span>
+                        <span className="message-time">{message.time}</span>
+                      </div>
+                      <div className="ai-message-content">
+                        {message.content.split('\n\n').map((paragraph, index) => {
+                          // Convert **text** to <strong>text</strong>
+                          const formattedText = paragraph.replace(
+                            /\*\*(.*?)\*\*/g, 
+                            '<strong>$1</strong>'
+                          );
+                          
+                          return (
+                            <p 
+                              key={index} 
+                              dangerouslySetInnerHTML={{ __html: formattedText }}
+                            />
+                          );
+                        })}
+                        
+                        {message.actions && (
+                          <div className="ai-suggestion-actions">
+                            {message.actions.map((action, index) => (
+                              <button 
+                                key={index}
+                                className={`ai-action-button ${action.value === 'yes' ? 'accept' : 'reject'} ${message.selectedAction === action.value ? 'selected' : ''} ${message.selectedAction && message.selectedAction !== action.value ? 'not-selected' : ''}`}
+                                onClick={() => handleAiAction(message.id, action.value)}
+                                disabled={message.selectedAction !== undefined}
+                              >
+                                {action.label}
+                                {message.selectedAction === action.value && (
+                                  <svg className="check-icon" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="20 6 9 17 4 12"></polyline>
+                                  </svg>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
-                  
-                  <div className="ai-message">
-                    <div className="ai-message-header">
-                      <span className="ai-name">StoreAI</span>
-                      <span className="message-time">Yesterday</span>
-                    </div>
-                    <div className="ai-message-content">
-                      <p>I've analyzed your product performance. Your "AM RGB 65" keyboard has been viewed the most but has a low conversion rate. Consider offering a 10% discount to boost sales.</p>
-                      <div className="ai-suggestion-actions">
-                        <button className="ai-action-button accept">Apply discount</button>
-                        <button className="ai-action-button reject">Ignore</button>
-                      </div>
-                    </div>
-                  </div>
+                  ))}
                 </div>
                 
                 <div className="ai-input">
