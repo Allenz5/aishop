@@ -29,6 +29,9 @@ function Main() {
   const [storeGenerated, setStoreGenerated] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [droppedItems, setDroppedItems] = useState([]);
+  const [isPublishEnabled, setIsPublishEnabled] = useState(false);
+  const [publishStatus, setPublishStatus] = useState('idle'); // 'idle', 'processing', 'published'
+  const [publishedUrl, setPublishedUrl] = useState('');
   const dragImageRef = useRef(null);
   const virtualSpaceRef = useRef(null);
 
@@ -70,6 +73,13 @@ function Main() {
     
     // Set storeGenerated state
     setStoreGenerated(storeGeneratedValue === 'true');
+    
+    // Check if all conditions are met to enable publish button
+    setIsPublishEnabled(
+      storeGeneratedValue === 'true' && 
+      productsLoaded === 'true' && 
+      agentsGenerated === 'true'
+    );
     
     // If agentsGenerated is true, load the Nyxbyte agent
     if (agentsGenerated === 'true') {
@@ -152,6 +162,28 @@ function Main() {
       return () => clearTimeout(timer);
     }
   }, [storeStatus]);
+
+  // Function to handle publish action
+  const handlePublish = () => {
+    // Set to processing state
+    setPublishStatus('processing');
+    console.log('Publishing virtual store...');
+    
+    // Simulate processing time
+    setTimeout(() => {
+      // Store published state in localStorage
+      localStorage.setItem('storePublished', 'true');
+      
+      // Use a fixed code with letters and numbers - "jx518" 
+      // "jx" for "吉祥" (ji xiang) meaning "auspicious/lucky"
+      // "518" sounds like "我要发" (wo yao fa) meaning "I will prosper"
+      const url = `http://localhost:3000/store/jx518`;
+      setPublishedUrl(url);
+      
+      // Update status to published
+      setPublishStatus('published');
+    }, 3000); // 3 seconds processing time
+  };
 
   // Function to handle drag start for products and agents
   const handleDragStart = (e, item, type) => {
@@ -317,10 +349,56 @@ function Main() {
             </div>
 
             <div className="comment-section">
-              <h3 className="section-title">CUSTOMER COMMENTS</h3>
-              <div className="comments-list">
-                <div className="no-comments">
-                  No customer comments yet.
+              <h3 className="section-title">STORE AI ASSISTANT</h3>
+              <div className="ai-assistant-container">
+                <div className="ai-messages">
+                  <div className="ai-message">
+                    <div className="ai-message-header">
+                      <span className="ai-name">StoreAI</span>
+                      <span className="message-time">Just now</span>
+                    </div>
+                    <div className="ai-message-content">
+                      <p>Welcome! I'm your AI store assistant. I'll help you manage your store and provide recommendations based on trends and customer behavior.</p>
+                    </div>
+                  </div>
+                  
+                  <div className="ai-message">
+                    <div className="ai-message-header">
+                      <span className="ai-name">StoreAI</span>
+                      <span className="message-time">Just now</span>
+                    </div>
+                    <div className="ai-message-content">
+                      <p>Halloween is coming up in a few weeks. Would you like me to suggest some seasonal changes to your store design?</p>
+                      <div className="ai-suggestion-actions">
+                        <button className="ai-action-button accept">Yes, show me</button>
+                        <button className="ai-action-button reject">Not now</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="ai-message">
+                    <div className="ai-message-header">
+                      <span className="ai-name">StoreAI</span>
+                      <span className="message-time">Yesterday</span>
+                    </div>
+                    <div className="ai-message-content">
+                      <p>I've analyzed your product performance. Your "AM RGB 65" keyboard has been viewed the most but has a low conversion rate. Consider offering a 10% discount to boost sales.</p>
+                      <div className="ai-suggestion-actions">
+                        <button className="ai-action-button accept">Apply discount</button>
+                        <button className="ai-action-button reject">Ignore</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="ai-input">
+                  <input type="text" placeholder="Ask your AI assistant a question..." />
+                  <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <line x1="22" y1="2" x2="11" y2="13"></line>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -329,7 +407,24 @@ function Main() {
           {/* Center containers */}
           <div className="center-side">
             <div className="place-container">
-              <h2 className="container-title">YOUR VIRTUAL STORE</h2>
+              <div className="container-header">
+                <h2 className="container-title">YOUR VIRTUAL STORE</h2>
+                <div className="publish-container">
+                  <button 
+                    className={`publish-button ${isPublishEnabled ? 'enabled' : 'disabled'} ${publishStatus === 'processing' ? 'processing' : ''}`}
+                    disabled={!isPublishEnabled || publishStatus === 'processing'}
+                    onClick={handlePublish}
+                  >
+                    {publishStatus === 'processing' ? 'Publishing...' : 'Publish'}
+                  </button>
+                  {publishStatus === 'published' && (
+                    <div className="published-url">
+                      <span className="url-label">Live at:</span>
+                      <a href={publishedUrl} target="_blank" rel="noopener noreferrer">{publishedUrl}</a>
+                    </div>
+                  )}
+                </div>
+              </div>
               {storeGenerated ? (
                 <div 
                   ref={virtualSpaceRef}
