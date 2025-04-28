@@ -36,13 +36,13 @@ function Main() {
     {
       id: 1,
       name: 'StoreAI',
-      time: 'Just now',
-      content: 'Welcome to your new virtual store! I\'m StoreAI, your assistant that provides real-time advice, product insights, and customer trend analysis to help optimize your store performance.'
+      time: 'Today',
+      content: 'Welcome to your new virtual store! I\'m StoreAI, your all-in-one AI business assistant. I analyze your store\'s performance, provide actionable advice, remind you of important events, and much more.'
     },
     {
       id: 2,
       name: 'StoreAI',
-      time: 'Just now',
+      time: 'Today',
       content: 'Would you like me to show you how to set up your store?',
       actions: [
         { label: 'Yes, please', value: 'yes' },
@@ -227,6 +227,62 @@ function Main() {
     }
   }, []);
 
+  // Load saved positions from localStorage
+  useEffect(() => {
+    if (storeGenerated && virtualSpaceRef.current && (products.length > 0 || agents.length > 0)) {
+      try {
+        const positionsJson = localStorage.getItem('itemPositions');
+        if (positionsJson) {
+          const positions = JSON.parse(positionsJson);
+          
+          // Create array of items to add
+          const itemsToAdd = [];
+          
+          // Virtual space dimensions - needed to convert relative to absolute
+          const vsRef = virtualSpaceRef.current;
+          const rect = vsRef.getBoundingClientRect();
+          const width = rect.width;
+          const height = rect.height;
+          
+          // Process each saved position
+          Object.values(positions).forEach(pos => {
+            // Convert relative position to absolute for this container
+            const x = pos.relativeX * width;
+            const y = pos.relativeY * height;
+            
+            // Find the item by name
+            let item;
+            if (pos.type === 'product') {
+              item = products.find(p => p.name === pos.name);
+            } else if (pos.type === 'agent') {
+              item = agents.find(a => a.name === pos.name);
+            }
+            
+            if (item) {
+              itemsToAdd.push({
+                id: `${pos.type}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                type: pos.type,
+                name: pos.name,
+                item,
+                x,
+                y,
+                relativeX: pos.relativeX,
+                relativeY: pos.relativeY
+              });
+            }
+          });
+          
+          if (itemsToAdd.length > 0) {
+            setDroppedItems(itemsToAdd);
+            console.log('Loaded items from localStorage:', itemsToAdd);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading positions from localStorage:', error);
+      }
+    }
+  }, [storeGenerated, products, agents, virtualSpaceRef.current]);
+
   // Simulate store data loading
   useEffect(() => {
     if (storeStatus === 'converting') {
@@ -283,8 +339,8 @@ function Main() {
         img.style.height = '105px';
       } else {
         // 3.0x size for agents (50px * 3.0 = 150px)
-        img.style.width = '139px';
-        img.style.height = '139px';
+        img.style.width = '150px';
+        img.style.height = '150px';
         img.style.objectFit = 'contain'; // Use contain instead of cover to avoid cropping
       }
       
@@ -302,6 +358,29 @@ function Main() {
     setIsDragging(false);
   };
 
+  // Save item position to localStorage
+  const saveItemPositionToLocalStorage = (type, name, relativeX, relativeY) => {
+    try {
+      // Get existing positions or initialize empty object
+      const positionsJson = localStorage.getItem('itemPositions') || '{}';
+      const positions = JSON.parse(positionsJson);
+      
+      // Update with new position
+      positions[`${type}-${name}`] = { 
+        type, 
+        name, 
+        relativeX, 
+        relativeY 
+      };
+      
+      // Save back to localStorage
+      localStorage.setItem('itemPositions', JSON.stringify(positions));
+      console.log(`Saved position for ${type} ${name}: x=${relativeX.toFixed(4)}, y=${relativeY.toFixed(4)}`);
+    } catch (error) {
+      console.error('Error saving position to localStorage:', error);
+    }
+  };
+
   // Handle drop in the virtual space
   const handleDrop = (e) => {
     e.preventDefault();
@@ -311,6 +390,10 @@ function Main() {
     const rect = dropZone.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
+    
+    // Calculate relative positions (0 to 1)
+    const relativeX = x / rect.width;
+    const relativeY = y / rect.height;
     
     // Get the dropped item data
     try {
@@ -332,16 +415,22 @@ function Main() {
       
       if (droppedItem) {
         // Add the item to our dropped items with position
-        setDroppedItems(prev => [
-          ...prev,
-          {
-            id: `${data.type}-${Date.now()}`,
-            type: data.type,
-            item: droppedItem,
-            x,
-            y
-          }
-        ]);
+        const newItem = {
+          id: `${data.type}-${Date.now()}`,
+          type: data.type,
+          name: data.id, // Store the name for identification
+          item: droppedItem,
+          x,
+          y,
+          relativeX,
+          relativeY
+        };
+        
+        // Add to state
+        setDroppedItems(prev => [...prev, newItem]);
+        
+        // Save to localStorage
+        saveItemPositionToLocalStorage(data.type, data.id, relativeX, relativeY);
       }
     } catch (error) {
       console.error('Error processing dropped item:', error);
@@ -545,28 +634,33 @@ function Main() {
                   />
                   
                   {/* Render dropped items */}
-                  {droppedItems.map(item => (
-                    <div
-                      key={item.id}
-                      style={{
-                        position: 'absolute',
-                        left: `${item.x - (item.type === 'agent' ? 75 : 52.5)}px`,
-                        top: `${item.y - (item.type === 'agent' ? 75 : 52.5)}px`,
-                        zIndex: 10
-                      }}
-                    >
-                      <img 
-                        src={item.type === 'agent' ? agentImage : item.item.images[0]}
-                        alt={item.item.name}
+                  {droppedItems.map(item => {
+                    // For rendering, we use the absolute x,y values
+                    const offsetX = item.type === 'agent' ? 75 : 52.5;
+                    const offsetY = item.type === 'agent' ? 75 : 52.5;
+                    
+                    return (
+                      <div
+                        key={item.id}
                         style={{
-                          width: item.type === 'agent' ? '139px' : '105px',
-                          height: item.type === 'agent' ? '139px' : '105px',
-                          objectFit: item.type === 'agent' ? 'contain' : 'cover'
+                          position: 'absolute',
+                          left: `${item.x - offsetX}px`,
+                          top: `${item.y - offsetY}px`,
+                          zIndex: 10
                         }}
-                      />
-                    </div>
-                  
-                  ))}
+                      >
+                        <img 
+                          src={item.type === 'agent' ? agentImage : item.item.images[0]}
+                          alt={item.item.name}
+                          style={{
+                            width: item.type === 'agent' ? '150px' : '105px',
+                            height: item.type === 'agent' ? '150px' : '105px',
+                            objectFit: item.type === 'agent' ? 'contain' : 'cover'
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               ) : (
                 <div className="empty-state">

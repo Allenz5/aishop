@@ -5,9 +5,27 @@ import './Login.css';
 function Login() {
   const navigate = useNavigate();
   const [resumeId, setResumeId] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [siteUrl, setSiteUrl] = useState('');
+
+  const handleSiteUrlChange = (e) => {
+    setSiteUrl(e.target.value);
+  };
 
   const handleNavigation = (fromScratch) => {
-    navigate('/main', { state: { fromScratch } });
+    if (!fromScratch) {
+      // Start loading process for site conversion
+      setIsLoading(true);
+      
+      // Navigate after 7 seconds
+      setTimeout(() => {
+        setIsLoading(false);
+        navigate('/main', { state: { fromScratch, convertedUrl: siteUrl } });
+      }, 7000);
+    } else {
+      // For "Start from Scratch", navigate immediately
+      navigate('/main', { state: { fromScratch } });
+    }
   };
 
   const handleResume = () => {
@@ -25,12 +43,15 @@ function Login() {
           type="text"
           placeholder="https://yourstore.com"
           className="login-input"
+          value={siteUrl}
+          onChange={handleSiteUrlChange}
         />
         <button
-          className="btn-primary"
+          className={`btn-primary ${isLoading ? 'loading' : ''}`}
           onClick={() => handleNavigation(false)}
+          disabled={isLoading}
         >
-          ↳ Convert Site
+          {isLoading ? 'Converting...' : '↳ Convert Site'}
         </button>
 
         <div className="divider"><span>or</span></div>
@@ -38,6 +59,7 @@ function Login() {
         <button
           className="btn-outline"
           onClick={() => handleNavigation(true)}
+          disabled={isLoading}
         >
           Start from Scratch
         </button>
@@ -52,10 +74,13 @@ function Login() {
             value={resumeId}
             onChange={(e) => setResumeId(e.target.value)}
           />
-          <button className="btn-outline" onClick={handleResume}>
+          <button 
+            className="btn-outline" 
+            onClick={handleResume}
+            disabled={isLoading}
+          >
             Open Existing Store
           </button>
-
         </div>
       </div>
     </div>
