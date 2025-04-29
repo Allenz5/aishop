@@ -89,7 +89,7 @@ function Main() {
                   '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
                   '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
                   '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
-                  'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations. Feel free to ask if you need any assistance!'
+                  'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
               }
             ]);
           } else {
@@ -100,7 +100,7 @@ function Main() {
                 id: Date.now(),
                 name: 'StoreAI',
                 time: 'Just now',
-                content: 'Sounds good! I\'ll be here if you need any help.'
+                content: 'Sounds good! '
               }
             ]);
           }
@@ -571,15 +571,7 @@ function Main() {
                   ))}
                 </div>
                 
-                <div className="ai-input">
-                  <input type="text" placeholder="Ask your AI assistant a question..." />
-                  <button>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="22" y1="2" x2="11" y2="13"></line>
-                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                  </button>
-                </div>
+                
               </div>
             </div>
           </div>
