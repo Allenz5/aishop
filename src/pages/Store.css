@@ -149,6 +149,78 @@ body {
   min-height: 300px;
 }
 
+/* New Comment Styles */
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.comment-item {
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.comment-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  align-items: center;
+}
+
+.comment-username {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.comment-timestamp {
+  color: #666;
+  font-size: 12px;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 0 8px 0;
+}
+
+.comment-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.comment-likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+}
+
+.comment-likes svg {
+  width: 14px;
+  height: 14px;
+  color: #666;
+}
+
+.comment-reply-btn {
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: #0066cc;
+  cursor: pointer;
+  padding: 0;
+}
+
+.add-comment-btn {
+  margin-top: 16px;
+  align-self: center;
+}
+
 /* Center containers - Expanded virtual space */
 .center-side {
   width: 65%;
@@ -178,7 +250,6 @@ body {
   align-items: center;
   overflow: hidden;
   position: relative;
-  cursor: pointer;
   transition: transform 0.2s ease-out;
 }
 
@@ -256,6 +327,43 @@ body {
   overflow-y: auto;
   padding-right: 8px;
   margin-bottom: 16px;
+  scroll-behavior: smooth; /* Add smooth scrolling */
+  
+  /* Ensure the scrollbar appears when needed */
+  overflow-y: auto;
+  
+  /* Better scrollbar styling for WebKit browsers (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+}
+
+/* Add this if messages aren't pushing to the bottom of the container */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* This pushes content to the bottom */
+}
+
+/* Fix for Firefox and other browsers */
+@supports (scrollbar-width: thin) {
+  .chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+  }
 }
 
 .message {
@@ -499,4 +607,37 @@ body {
 @keyframes blinkCursor {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0% {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) 
+            drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+  }
+  50% {
+    filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.9)) 
+            drop-shadow(0 0 40px rgba(255, 255, 255, 0.7));
+  }
+  100% {
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.7)) 
+            drop-shadow(0 0 25px rgba(255, 255, 255, 0.5));
+  }
+}
+
+/* We're keeping the class name 'agent-highlight' for simplicity,
+   but it's now used for both agent and product highlighting */
+.agent-highlight {
+  animation: pulseGlow 2s infinite ease-in-out;
+  transition: filter 0.5s ease-in-out;
+}
+
+/* Optional: Add a subtle scale effect to make the greeting more engaging */
+@keyframes subtleScale {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.agent-with-highlight {
+  animation: subtleScale 4s infinite ease-in-out;
 }

@@ -31,7 +31,8 @@
   // Import profile image
   import profileImage from '../components/Images/profile.png';
   // Import special product image
-  import keyboardImage from '../components/Images/img1.jpg';
+  import keyboardImage from '../components/Images/img3.jpg';
+  import mouseImage from '../components/Images/img2.jpg';
   // Import product images
   import prod1Image from '../components/Images/prod1.png';
   import prod2Image from '../components/Images/prod2.png';
@@ -160,6 +161,10 @@
     const [fullMessageText, setFullMessageText] = useState("");
     // Slow down typing speed for more natural effect
     const [typingSpeed, setTypingSpeed] = useState(40); // milliseconds per character - increased from 30 to 40
+    const [showAgentHighlight, setShowAgentHighlight] = useState(false);
+    const [highlightedProductId, setHighlightedProductId] = useState(null);
+    const chatMessagesRef = useRef(null);
+
   
     // Define the missing productReplies array
     const productReplies = [
@@ -170,67 +175,66 @@
   
     // Initial message with delay and typing effect
     useEffect(() => {
-      // Show typing indicator first
-      setTimeout(() => {
-        setIsTyping(false);
+      // First, smoothly scroll the space to center the agent
+      let scrollAmount = 0;
+      const targetScroll = -20 * scrollSpeed; // 20 units to the right (negative value)
+      
+      const scrollInterval = setInterval(() => {
+        scrollAmount -= 3; // Move 3px at a time for smooth animation
+        setVirtualSpaceOffset(scrollAmount);
         
-        // Set the message text to be typed
-        const initialMessage = "Yo. You found me. I'm Nyxbyte. What do you need?";
-        setIsTypingMessage(true);
-        
-        // Instead of appending characters one by one to the state,
-        // track character index in a ref to avoid state batching issues
-        let charIndex = 0;
-        const fullText = initialMessage;
-        
-        const typingInterval = setInterval(() => {
-          if (charIndex < fullText.length) {
-            // Set the entire substring from start to current index
-            // This ensures we always have exactly the right characters
-            setCurrentTypingMessage(fullText.substring(0, charIndex + 1));
-            charIndex++;
-          } else {
-            clearInterval(typingInterval);
-            setIsTypingMessage(false);
-            
-            // Add the completed greeting message to the chat
-            setMessages([{
-              id: 1,
-              text: initialMessage,
-              sender: 'agent',
-              timestamp: new Date()
-            }]);
-            
-            // Show quick replies after the message appears
-            setShowQuickReplies(true);
-            // Make sure product replies are hidden initially
-            setShowProductReplies(false);
-          }
-        }, typingSpeed);
-        
-        // Smoothly scroll the space 20 units to the right
-        let scrollAmount = 0;
-        const targetScroll = -20 * scrollSpeed; // 20 units to the right (negative value)
-        const scrollInterval = setInterval(() => {
-          scrollAmount -= 3; // Move 3px at a time for smooth animation
-          setVirtualSpaceOffset(scrollAmount);
+        // Stop when we reach target scroll amount
+        if (scrollAmount <= targetScroll) {
+          clearInterval(scrollInterval);
+          setVirtualSpaceOffset(targetScroll);
           
-          // Stop when we reach target scroll amount
-          if (scrollAmount <= targetScroll) {
-            clearInterval(scrollInterval);
-            setVirtualSpaceOffset(targetScroll);
-          }
-        }, 16); // ~60fps animation
-        
-      }, 3500); // 3.5 second delay
+          // After the scene movement is complete, start the greeting
+          setTimeout(() => {
+            // Turn on the agent highlight permanently (no timeout to remove it)
+            setShowAgentHighlight(true);
+            
+            // Now show the greeting
+            setIsTyping(false);
+            
+            // Set the message text to be typed
+            const initialMessage = "Yo. You found me. I'm Nyxbyte. What do you need?";
+            setIsTypingMessage(true);
+            
+            let charIndex = 0;
+            const fullText = initialMessage;
+            
+            const typingInterval = setInterval(() => {
+              if (charIndex < fullText.length) {
+                setCurrentTypingMessage(fullText.substring(0, charIndex + 1));
+                charIndex++;
+              } else {
+                clearInterval(typingInterval);
+                setIsTypingMessage(false);
+                
+                // Add the completed greeting message to the chat
+                setMessages([{
+                  id: 1,
+                  text: initialMessage,
+                  sender: 'agent',
+                  timestamp: new Date()
+                }]);
+                
+                // Show quick replies after the message appears
+                setShowQuickReplies(true);
+                setShowProductReplies(false);
+              }
+            }, typingSpeed);
+          }, 1000); // Wait 1 second after the scrolling completes before greeting
+        }
+      }, 8); // ~60fps animation
     }, []);
   
     // Quick reply options
-    const quickReplies = [
+    const [quickReplies, setQuickReplies] = useState([
       "Introduce me to the products.",
       "Just looking around, thanks.",
       "Tell me more about the brand."
-    ];
+    ]);
   
     // TODO: Replace with actual predefined replies
     const predefinedReplies = {
@@ -264,6 +268,16 @@
     const handleCreateYourOwn = () => {
       navigate('/');
     };
+
+    const scrollToBottom = () => {
+      if (chatMessagesRef.current) {
+        chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+      }
+    };
+
+    useEffect(() => {
+      scrollToBottom();
+    }, [messages, isTyping, isTypingMessage]); 
   
     // Effects for handling drag image creation
     useEffect(() => {
@@ -317,7 +331,7 @@
           id: `product-${Date.now()}-3`,
           type: 'product',
           item: predefinedProducts[2], // CYBERBOARD Novel Project
-          x: 1750,
+          x: 1742,
           y: 800,
           relativeX: 0.5,
           relativeY: 0.35
@@ -364,7 +378,7 @@
           type: 'agent',
           item: nyxbyteAgent,
           x: 2030,
-          y: 850,
+          y: 875,
           relativeX: 0.55,
           relativeY: 0.75
         }
@@ -496,9 +510,11 @@
               const htmlLength = text.length;
               const partialHtml = text.substring(0, Math.floor(htmlLength * progress));
               setCurrentTypingMessage(partialHtml);
+              scrollToBottom(); // Scroll while typing
             } else {
               clearInterval(typingInterval);
               setIsTypingMessage(false);
+              scrollToBottom(); // Scroll while typing
               resolve(text);
             }
           }, typingSpeed);
@@ -518,6 +534,7 @@
             } else {
               clearInterval(typingInterval);
               setIsTypingMessage(false);
+              scrollToBottom(); // Scroll while typing
               resolve(text);
             }
           }, typingSpeed);
@@ -555,10 +572,10 @@
           
           // HTML content to display
           const specialMessageHtml = `<p>Alright, let's start strong.</p>
-  <p>This is the Cyberboard R3 – Gold Paisley edition.</p>
-  <img src="${keyboardImage}" alt="Cyberboard R3 Gold Paisley Edition" />
-  <p>It's got a bold gold paisley pattern, inspired by traditional East Asian art, paired with a retro-futuristic LED matrix up top.</p>
-  <p>Fully customizable, wireless, and seriously limited—this one's made to stand out on your desk and your feed.</p>`;
+  <p>This is the Petbrick 65 – the world’s first pettable keyboard.</p>
+  <img src="${keyboardImage}"/>
+  <p>It's wrapped in soft faux fur, inspired by every cat owner’s daily struggle: a furry friend sprawled across the keys.</p>
+  <p>Fully customizable, wireless, and seriously one-of-a-kind—this one's made to steal your desk space and your heart.</p>`;
   
           // Start typing effect for HTML content
           simulateTyping(specialMessageHtml, true).then(typedText => {
@@ -577,6 +594,50 @@
             // Show product-specific reply options
             setShowProductReplies(true);
           });
+
+          const petbrickItem = droppedItems.find(item => 
+            item.type === 'product' && item.item.name === 'Dry Studio PETBRICK 65'
+          );
+          
+          // Begin moving as the typing starts
+          // Move 25 units to the left (positive value increases the offset)
+          const newOffset = virtualSpaceOffset + (25 * scrollSpeed);
+          
+          // Smoothly animate the movement - slower to match typing duration
+          let currentOffset = virtualSpaceOffset;
+          const targetOffset = newOffset;
+          
+          // Calculate number of steps based on typing duration
+          // Assuming typing will take about 4 seconds for the product intro message
+          const totalAnimationTime = 4000; // ms
+          const frameRate = 16; // ms (60fps)
+          const totalSteps = totalAnimationTime / frameRate;
+          const moveStep = (targetOffset - currentOffset) / totalSteps;
+          
+          const moveInterval = setInterval(() => {
+            currentOffset = currentOffset + moveStep;
+            setVirtualSpaceOffset(currentOffset);
+            
+            // Stop when we reach or exceed the target offset
+            if ((moveStep > 0 && currentOffset >= targetOffset) || 
+                (moveStep < 0 && currentOffset <= targetOffset)) {
+              clearInterval(moveInterval);
+              setVirtualSpaceOffset(targetOffset);
+            }
+          }, frameRate);
+          
+          // Remove glow from NPC and add to the product
+          setShowAgentHighlight(false);
+          setQuickReplies([
+            "Introduce me to the products.",
+            "Just looking around, thanks.",
+            "Tell me more about the brand."
+          ]);
+          
+          // Set the highlighted product if we found it
+          if (petbrickItem) {
+            setHighlightedProductId(petbrickItem.id);
+          }
         }, 3500); // 3.5 second delay for the keyboard product message
         
         return;
@@ -629,10 +690,64 @@
       }
     };
   
+
+    const mouseReplies = [
+      "That looks awesome. How much?",
+      "Does it come in other colors?",
+      "Tell me about the battery life."
+    ];
+
     // Handle click in virtual space - now does nothing
     const handleVirtualSpaceClick = () => {
-      // No behavior on click - removed the chat response functionality
-      // This function is kept as a placeholder in case we want to add functionality later
+      // Find the mouse product ID
+      const mouseProduct = droppedItems.find(item => 
+        item.type === 'product' && item.item.name === 'AM INFINITY MOUSE'
+      );
+      
+      // 1. Transfer the glowing effect to the mouse product
+      setShowAgentHighlight(false);
+      setHighlightedProductId(mouseProduct ? mouseProduct.id : null);
+      
+      // 2. Show loading/typing indicator, hide customer choice responses
+      setShowQuickReplies(false);
+      setShowProductReplies(false);
+      setIsTyping(true);
+      
+      // 3. After a short delay, show the new message about the mouse
+      setTimeout(() => {
+        setIsTyping(false);
+        
+        // The new message text with HTML formatting for better presentation
+        const mouseMessageHtml = `<p>Nice taste.</p>
+    <p>This is the AM Infinity Mouse – Angry Miao's debut into gaming mice, and it doesn't miss.</p>
+    <img src="${mouseImage}"/>
+    <p>Skeletonized magnesium-alloy shell, inspired by the Lotus Type 79 F1 car. Ultra-light at 49g, with a magnetic hot-swappable battery so you never have to plug in.</p>
+    <p>30,000 DPI PixArt sensor, 8K polling rate, and TTC Orange Dot Optical V2 switches—built to dominate your game and your setup.</p>`;
+        
+        // Highlight the product image
+        if (mouseProduct) {
+          // Start typing effect for HTML content
+          simulateTyping(mouseMessageHtml, true).then(typedText => {
+            // Add the completed message to the chat with HTML flag
+            const mouseMessage = {
+              id: messages.length + 1,
+              text: typedText,
+              sender: 'agent',
+              timestamp: new Date(),
+              hasHtml: true  // Note that this is HTML content
+            };
+            
+            setMessages(prev => [...prev, mouseMessage]);
+
+            setShowQuickReplies(true);
+      
+            // Update the quick replies with mouse-specific options
+            // We'll use the existing quick replies state, but change its content
+            // This is a bit of a hack but keeps the component simpler
+            setQuickReplies(mouseReplies);
+          });
+        }
+      }, 1500); // 1.5 second typing indicator delay
     };
   
     return (
@@ -747,13 +862,18 @@
                             position: 'absolute',
                             left: `${item.x - (item.type === 'agent' ? 100 : 75)}px`, // Adjusted offsets for larger images
                             top: `${item.y - (item.type === 'agent' ? 100 : 75)}px`, // Adjusted offsets for larger images
-                            zIndex: 10,
-                            transform: `translateX(${0}px)` // Items move with the parent container
+                            zIndex: 10
                           }}
                         >
                           <img 
                             src={item.type === 'agent' ? agentImage : item.item.images[0]}
                             alt={item.item.name}
+                            className={
+                              (item.type === 'agent' && showAgentHighlight) || 
+                              (item.type === 'product' && item.id === highlightedProductId) 
+                                ? 'agent-highlight' 
+                                : ''
+                            }
                             style={{
                               width: item.type === 'agent' ? '200px' : '150px', // Increased from 139px/105px
                               height: item.type === 'agent' ? '200px' : '150px', // Increased from 139px/105px
@@ -779,7 +899,7 @@
                   
                   <div className="chat-container">
                     {/* Messages */}
-                    <div className="chat-messages">
+                    <div className="chat-messages" ref={chatMessagesRef}>
                       {messages.map(message => (
                         <div
                           key={message.id}

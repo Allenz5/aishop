@@ -50,6 +50,31 @@
     const maxUnits = 3; // Maximum number of units (keypresses) allowed in each direction
     const maxDistance = maxUnits * scrollSpeed; // Maximum pixel distance in each direction
   
+    // Sample comments data for the comment section
+    const [comments, setComments] = useState([
+      {
+        id: 1,
+        username: "Sarah_K",
+        text: "That gold paisley keyboard is absolutely gorgeous! 😍 Will it be available next month?",
+        timestamp: "2 hours ago",
+        likes: 42
+      },
+      {
+        id: 2,
+        username: "TechEnthusiast",
+        text: "I've been using the CYBERBOARD R2 for a month now and the build quality is outstanding. Worth every penny.",
+        timestamp: "1 day ago",
+        likes: 27
+      },
+      {
+        id: 3,
+        username: "MechKeys_Lover",
+        text: "Do you offer any keyboards with silent switches? My office mates are complaining about the clickity-clack 😅",
+        timestamp: "3 days ago",
+        likes: 13
+      }
+    ]);
+
     // Handle keyboard navigation
     useEffect(() => {
       const handleKeyDown = (e) => {
@@ -117,7 +142,7 @@
         setIsTyping(false);
         
         // Set the message text to be typed
-        const initialMessage = "Yo, welcome to Viral LEDs — I’m Neon, your guide to lighting up the world, one epic glow at a time! What are you looking for today?";
+        const initialMessage = "Yo, welcome to Viral LEDs — I'm Neon, your guide to lighting up the world, one epic glow at a time! What are you looking for today?";
         setIsTypingMessage(true);
         
         // Instead of appending characters one by one to the state,
@@ -395,6 +420,21 @@
       // No behavior on click - removed the chat response functionality
       // This function is kept as a placeholder in case we want to add functionality later
     };
+
+    // Function to handle adding a new comment
+    const handleAddComment = () => {
+      // This would typically open a comment form, but for simplicity
+      // we'll just add a placeholder comment
+      const newComment = {
+        id: comments.length + 1,
+        username: "Visitor",
+        text: "Just joined the glow gang! Can't wait to get my hands on these keyboards.",
+        timestamp: "Just now",
+        likes: 0
+      };
+      
+      setComments([newComment, ...comments]);
+    };
   
     return (
       <>
@@ -451,13 +491,39 @@
   
                 <div className="comment-section">
                   <h3 className="section-title">COMMENTS</h3>
-                  <div className="empty-state">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                    </svg>
-                    <p>No comments yet</p>
-                    <button className="btn-outline">Add Comment</button>
-                  </div>
+                  {comments.length > 0 ? (
+                    <div className="comments-list">
+                      {comments.map(comment => (
+                        <div key={comment.id} className="comment-item">
+                          <div className="comment-header">
+                            <span className="comment-username">{comment.username}</span>
+                            <span className="comment-timestamp">{comment.timestamp}</span>
+                          </div>
+                          <p className="comment-text">{comment.text}</p>
+                          <div className="comment-footer">
+                            <span className="comment-likes">
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                              </svg>
+                              {comment.likes}
+                            </span>
+                            <button className="comment-reply-btn">Reply</button>
+                          </div>
+                        </div>
+                      ))}
+                      <button className="btn-outline add-comment-btn" onClick={handleAddComment}>
+                        Add Comment
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                      </svg>
+                      <p>No comments yet</p>
+                      <button className="btn-outline">Add Comment</button>
+                    </div>
+                  )}
                 </div>
               </div>
   
