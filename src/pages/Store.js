@@ -572,9 +572,9 @@
           
           // HTML content to display
           const specialMessageHtml = `<p>Alright, let's start strong.</p>
-  <p>This is the Petbrick 65 – the world’s first pettable keyboard.</p>
+  <p>This is the Petbrick 65 – the world's first pettable keyboard.</p>
   <img src="${keyboardImage}"/>
-  <p>It's wrapped in soft faux fur, inspired by every cat owner’s daily struggle: a furry friend sprawled across the keys.</p>
+  <p>It's wrapped in soft faux fur, inspired by every cat owner's daily struggle: a furry friend sprawled across the keys.</p>
   <p>Fully customizable, wireless, and seriously one-of-a-kind—this one's made to steal your desk space and your heart.</p>`;
   
           // Start typing effect for HTML content

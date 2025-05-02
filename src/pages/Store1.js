@@ -54,24 +54,22 @@
     const [comments, setComments] = useState([
       {
         id: 1,
-        username: "Sarah_K",
-        text: "That gold paisley keyboard is absolutely gorgeous! 😍 Will it be available next month?",
-        timestamp: "2 hours ago",
-        likes: 42
+        username: "Customer",
+        text: "Muy satisfecho con el producto"
       },
       {
         id: 2,
-        username: "TechEnthusiast",
-        text: "I've been using the CYBERBOARD R2 for a month now and the build quality is outstanding. Worth every penny.",
-        timestamp: "1 day ago",
-        likes: 27
+        username: "Customer",
+        text: "high quality keyboard with some nice features, one issue would be that sometimes my CTRL key sticks",
+        reply: {
+          username: "Admin",
+          text: "Thank you for your feedback! For the CTRL key issue, please try replacing with the addtional switch. If the problem persists, we can help you replace the switch."
+        }
       },
       {
         id: 3,
-        username: "MechKeys_Lover",
-        text: "Do you offer any keyboards with silent switches? My office mates are complaining about the clickity-clack 😅",
-        timestamp: "3 days ago",
-        likes: 13
+        username: "Customer",
+        text: "I've owned over 7 mechanical keyboards over the past 15yrs, premium to budget. This is by far the smoothest & most pleasant board I've bought & use out of the box"
       }
     ]);
 
@@ -428,9 +426,7 @@
       const newComment = {
         id: comments.length + 1,
         username: "Visitor",
-        text: "Just joined the glow gang! Can't wait to get my hands on these keyboards.",
-        timestamp: "Just now",
-        likes: 0
+        text: "Just joined the glow gang! Can't wait to get my hands on these keyboards."
       };
       
       setComments([newComment, ...comments]);
@@ -497,16 +493,17 @@
                         <div key={comment.id} className="comment-item">
                           <div className="comment-header">
                             <span className="comment-username">{comment.username}</span>
-                            <span className="comment-timestamp">{comment.timestamp}</span>
                           </div>
                           <p className="comment-text">{comment.text}</p>
+                          {comment.reply && (
+                            <div className="comment-reply">
+                              <div className="comment-header">
+                                <span className="comment-username">{comment.reply.username}</span>
+                              </div>
+                              <p className="comment-text">{comment.reply.text}</p>
+                            </div>
+                          )}
                           <div className="comment-footer">
-                            <span className="comment-likes">
-                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                              </svg>
-                              {comment.likes}
-                            </span>
                             <button className="comment-reply-btn">Reply</button>
                           </div>
                         </div>
