@@ -43,6 +43,7 @@
   import prod7Image from '../components/Images/prod7.png';
   // Import video
   import bgVideo from '../components/Images/bg.mp4';
+  import favicon from '../components/Images/favicon.png'
   
   function Store() {
     const location = useLocation();
@@ -60,6 +61,16 @@
   
     // Handle keyboard navigation
     useEffect(() => {
+      document.title = "Angry Miao – Storia";
+      const link = document.querySelector("link[rel~='icon']");
+      if (link) {
+        link.href = favicon; // Place the icon in `public/`
+      } else {
+        const newLink = document.createElement("link");
+        newLink.rel = "icon";
+        newLink.href = favicon;
+        document.head.appendChild(newLink);
+      }
       const handleKeyDown = (e) => {
         // Don't move virtual space if currently focused on the chat input
         if (document.activeElement && document.activeElement.className === 'chat-input-field') {
@@ -754,7 +765,7 @@
       <>
         {/* Top Banner */}
         <div className="top-banner">
-          <h1 className="banner-title">MyCompanyName x Angry Miao</h1>
+          <h1 className="banner-title">Storia x Angry Miao</h1>
           <a href="http://localhost:3000" className="create-button">Create Your Own</a>
         </div>
         

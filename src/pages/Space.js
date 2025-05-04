@@ -8,6 +8,8 @@ import img1 from '../components/Images/img1.jpg';
 import img2 from '../components/Images/img2.jpg';
 import img3 from '../components/Images/img3.jpg';
 import './Space.css';
+import favicon from '../components/Images/favicon.png'
+
 
 function Space() {
   const navigate = useNavigate();
@@ -34,6 +36,16 @@ function Space() {
   // Update useEffect to log the images that are being used
   // Check if store has already been generated
   useEffect(() => {
+    document.title = "Storia";
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href = favicon; // Place the icon in `public/`
+    } else {
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      newLink.href = favicon;
+      document.head.appendChild(newLink);
+    }
     const storeGenerated = localStorage.getItem('storeGenerated');
     if (storeGenerated === 'true') {
       // If coming back to this page and store was already generated

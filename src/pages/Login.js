@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Login.css';
+import favicon from '../components/Images/favicon.png'
 
 function Login() {
   const navigate = useNavigate();
@@ -8,6 +9,19 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [siteUrl, setSiteUrl] = useState('');
 
+  useEffect(() => {
+    document.title = "Storia";
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href = favicon; // Place the icon in `public/`
+    } else {
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      newLink.href = favicon;
+      document.head.appendChild(newLink);
+    }
+  }, []); 
+  
   const handleSiteUrlChange = (e) => {
     setSiteUrl(e.target.value);
   };

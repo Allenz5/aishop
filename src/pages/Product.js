@@ -10,6 +10,8 @@ import prod4Image from '../components/Images/prod4.png';
 import prod5Image from '../components/Images/prod5.png';
 import prod6Image from '../components/Images/prod6.png';
 import prod7Image from '../components/Images/prod7.png';
+import favicon from '../components/Images/favicon.png'
+
 
 function Product() {
   const [showForm, setShowForm] = useState(false);
@@ -29,6 +31,17 @@ function Product() {
 
   // Add class to body when component mounts to prevent outer scrolling
   useEffect(() => {
+
+    document.title = "Storia";
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href = favicon; // Place the icon in `public/`
+    } else {
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      newLink.href = favicon;
+      document.head.appendChild(newLink);
+    }
     // Add the class when component mounts
     document.body.classList.add('product-page-active');
     

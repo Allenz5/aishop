@@ -35,6 +35,7 @@
   // Import video
   import bgVideo from '../components/Images/bg1.mp4';
   import ttLogo from '../components/Images/tt.svg'
+  import favicon from '../components/Images/favicon.png'
   
   function Store() {
     const location = useLocation();
@@ -60,21 +61,31 @@
       {
         id: 2,
         username: "Customer",
-        text: "high quality keyboard with some nice features, one issue would be that sometimes my CTRL key sticks",
+        text: "High quality LED light strips with vibrant colors, one issue would be that sometimes the remote is unresponsive",
         reply: {
           username: "Admin",
-          text: "Thank you for your feedback! For the CTRL key issue, please try replacing with the addtional switch. If the problem persists, we can help you replace the switch."
+          text: "Thank you for your feedback! For the remote issue, please try replacing the batteries. If the problem persists, we can provide a replacement remote."
         }
       },
       {
         id: 3,
         username: "Customer",
-        text: "I've owned over 7 mechanical keyboards over the past 15yrs, premium to budget. This is by far the smoothest & most pleasant board I've bought & use out of the box"
+        text: "I've used many LED strips over the years, from budget to premium. These are by far the brightest and easiest to install out of the box."
       }
     ]);
-
+    
     // Handle keyboard navigation
     useEffect(() => {
+      document.title = "Viral LEDs – Storia";
+      const link = document.querySelector("link[rel~='icon']");
+      if (link) {
+        link.href = favicon; // Place the icon in `public/`
+      } else {
+        const newLink = document.createElement("link");
+        newLink.rel = "icon";
+        newLink.href = favicon;
+        document.head.appendChild(newLink);
+      }
       const handleKeyDown = (e) => {
         // Don't move virtual space if currently focused on the chat input
         if (document.activeElement && document.activeElement.className === 'chat-input-field') {
@@ -436,7 +447,7 @@
       <>
         {/* Top Banner */}
         <div className="top-banner">
-          <h1 className="banner-title">MyCompanyName x Viral LEDs</h1>
+          <h1 className="banner-title">Storia x Viral LEDs</h1>
           <a href="http://localhost:3000" className="create-button">Create Your Own</a>
         </div>
         

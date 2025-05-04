@@ -4,6 +4,8 @@ import './Agent.css';
 import ProcessingSimulator from '../components/ProcessingSimulator';
 // Import the agent image
 import agentImage from '../components/Images/agent.gif';
+import favicon from '../components/Images/favicon.png'
+
 
 function Agent() {
   const [showForm, setShowForm] = useState(false);
@@ -23,6 +25,16 @@ function Agent() {
 
   // Add class to body when component mounts to prevent outer scrolling
   useEffect(() => {
+    document.title = "Storia";
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href = favicon; // Place the icon in `public/`
+    } else {
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      newLink.href = favicon;
+      document.head.appendChild(newLink);
+    }
     // Add the class when component mounts
     document.body.classList.add('agent-page-active');
     

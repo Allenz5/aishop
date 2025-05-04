@@ -14,6 +14,8 @@ import prod6Image from '../components/Images/prod6.png';
 import prod7Image from '../components/Images/prod7.png';
 // Import video
 import bgVideo from '../components/Images/bg.mp4';
+import favicon from '../components/Images/favicon.png'
+
 
 function Main() {
   const location = useLocation();
@@ -111,6 +113,16 @@ function Main() {
 
   // Effects for handling drag image creation
   useEffect(() => {
+    document.title = "Storia";
+    const link = document.querySelector("link[rel~='icon']");
+    if (link) {
+      link.href = favicon; // Place the icon in `public/`
+    } else {
+      const newLink = document.createElement("link");
+      newLink.rel = "icon";
+      newLink.href = favicon;
+      document.head.appendChild(newLink);
+    }
     // Create a hidden div for the drag image
     const dragImage = document.createElement('div');
     dragImage.style.position = 'absolute';
