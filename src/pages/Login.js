@@ -27,6 +27,7 @@ function Login() {
   };
 
   const handleNavigation = (fromScratch) => {
+    localStorage.setItem('isExistingStore', 'false');
     if (!fromScratch) {
       // Start loading process for site conversion
       setIsLoading(true);
@@ -43,15 +44,18 @@ function Login() {
   };
 
   const handleResume = () => {
-    // You can later send resumeId to backend here
+    // Set localStorage flag to indicate this is an existing store
+    localStorage.setItem('isExistingStore', 'true');
+    
+    // Navigate to main with resumeId and fromScratch: false
     navigate('/main', { state: { resumeId, fromScratch: false } });
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1 className="login-brand">VIRTUAL STORE</h1>
-        <p className="login-tagline">Rebuild presence. Pixel by pixel.</p>
+        <h1 className="login-brand">STORIA BUILDER</h1>
+        <p className="login-tagline">e-commerce comes alive.</p>
 
         <input
           type="text"

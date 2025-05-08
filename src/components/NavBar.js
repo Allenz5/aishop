@@ -16,7 +16,7 @@ function NavBar() {
     <div className="top-bars">
       <div className="logo-bar">
         <div className="logo-content">
-          <h1 className="logo-text">VIRTUAL STORE</h1>
+          <h1 className="logo-text">STORIA BUILDER</h1>
         </div>
       </div>
       <div className="nav-bar">

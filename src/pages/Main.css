@@ -192,6 +192,11 @@ body {
   color: #fff;
 }
 
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 .ai-action-button.accept:hover:not(:disabled) {
   background-color: #222;
   transform: translateY(-1px);
@@ -631,4 +636,13 @@ body {
 .stat-value {
   font-size: 1.5rem;
   font-weight: 700;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.highlight-spinner {
+  animation: spin 1.5s linear infinite;
 }

@@ -5,6 +5,10 @@ import './Main.css';
 // Import agent image
 import agentImage from '../components/Images/agent.gif';
 // Import product images
+import ag1Image from '../components/Images/ag1.png';
+import ag2Image from '../components/Images/ag2.png';
+import ag3Image from '../components/Images/ag3.png';
+import ag4Image from '../components/Images/ag4.png';
 import prod1Image from '../components/Images/prod1.png';
 import prod2Image from '../components/Images/prod2.png';
 import prod3Image from '../components/Images/prod3.png';
@@ -14,16 +18,26 @@ import prod6Image from '../components/Images/prod6.png';
 import prod7Image from '../components/Images/prod7.png';
 // Import video
 import bgVideo from '../components/Images/bg.mp4';
+import bg5Video from '../components/Images/bg5.mp4';
 import favicon from '../components/Images/favicon.png'
+import bg51Video from '../components/Images/bg51.mp4';
 
 
 function Main() {
   const location = useLocation();
   const navigate = useNavigate();
   const fromScratch = location.state?.fromScratch || false;
+  const aiMessageBoxRef = useRef(null);
+  const [highlightProcessing, setHighlightProcessing] = useState(false);
   
   const [activeTab, setActiveTab] = useState('products');
-  const [storeStatus, setStoreStatus] = useState(fromScratch ? 'new' : 'converting');
+  const [storeStatus, setStoreStatus] = useState(() => {
+    if (location.state?.resumeId) {
+      return 'existing';
+    } else {
+      return fromScratch ? 'new' : 'converting';
+    }
+  });
   
   // State for the agents and products
   const [agents, setAgents] = useState([]);
@@ -54,6 +68,13 @@ function Main() {
   ]);
   const dragImageRef = useRef(null);
   const virtualSpaceRef = useRef(null);
+
+  useEffect(() => {
+    if (aiMessageBoxRef.current) {
+      aiMessageBoxRef.current.scrollTop = aiMessageBoxRef.current.scrollHeight;
+    }
+  }, [aiMessages]);
+  
 
   // Function to handle AI button actions
   const handleAiAction = (messageId, actionValue) => {
@@ -94,6 +115,62 @@ function Main() {
                   'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
               }
             ]);
+          } else if (actionValue === 'yes111') {
+            // Special handling for "Highlight it" option
+            setAiMessages([
+              ...messagesCopy,
+              {
+                id: Date.now(),
+                name: 'StoreAI',
+                time: 'Just now',
+                content: 'Processing your request to make agent St0ri stand out. This will replace its default animation with a new attention-grabbing effect to help it stand out to visitors.'
+              }
+            ]);
+            
+            // Set a processing state for visual feedback (you need to add this state)
+            setHighlightProcessing(true);
+            
+            // After a delay, update the video and add completion message
+            setTimeout(() => {
+              // Change the background video by updating localStorage
+              localStorage.setItem('highlightedAgent', 'true');
+              
+              // Turn off processing state
+              setHighlightProcessing(false);
+              
+              // Add completion message
+              setAiMessages(prevMessages => [
+                ...prevMessages,
+                {
+                  id: Date.now() + 1,
+                  name: 'StoreAI',
+                  time: 'Just now',
+                  content: 'Agent St0ri has been updated! Its original animation was replaced with flashing green and red indicator lights, making it more noticeable in your store.'
+                }
+              ]);
+            }, 30000); // 3 seconds for processing animation
+          } else if (actionValue === 'yes222') {
+            setTimeout(() => {
+              setAiMessages([
+                ...messagesCopy,
+                {
+                  id: Date.now()+123,
+                  name: 'StoreAI',
+                  time: 'Just now',
+                  content: `Awesome! I recommend using <strong>Shippo</strong>—a trusted multi-carrier shipping solution.<br/><br/>
+                    You can set it up manually for now with these steps:<br/>
+                    <ol>
+                      <li>Sign up at <a href="https://goshippo.com" target="_blank">goshippo.com</a> and create your account.</li>
+                      <li>Connect your store (or add orders manually).</li>
+                      <li>Set up sender & recipient addresses.</li>
+                      <li>Select carriers and shipping options.</li>
+                      <li>Buy and print labels directly from the dashboard.</li>
+                      <li>Track shipments and handle returns with ease.</li>
+                    </ol>
+                    We’re also working on fully integrating Shippo into our platform, so soon you'll be able to manage everything right here without any code. Stay tuned!`
+                }
+              ]);
+            }, 2000);            
           } else {
             // Just acknowledge when "I'll explore myself" is clicked
             setAiMessages([
@@ -152,90 +229,306 @@ function Main() {
     const storeGeneratedValue = localStorage.getItem('storeGenerated');
     const productsLoaded = localStorage.getItem('productsLoaded');
     const agentsGenerated = localStorage.getItem('agentsGenerated');
+    const isExistingStore = localStorage.getItem('isExistingStore') === 'true';
+    const highlightedAgent = localStorage.getItem('highlightedAgent');
     
     console.log('storeGenerated:', storeGeneratedValue);
     console.log('productsLoaded:', productsLoaded);
     console.log('agentsGenerated:', agentsGenerated);
+    console.log('isExistingStore:', isExistingStore);
+    console.log('highlightProcessing:', highlightProcessing);
+    console.log('highlightedAgent:', highlightedAgent);
     
-    // Set storeGenerated state
-    setStoreGenerated(storeGeneratedValue === 'true');
-    
-    // Check if all conditions are met to enable publish button
-    setIsPublishEnabled(
-      storeGeneratedValue === 'true' && 
-      productsLoaded === 'true' && 
-      agentsGenerated === 'true'
-    );
-    
-    // If agentsGenerated is true, load the Nyxbyte agent
-    if (agentsGenerated === 'true') {
-      // Create Nyxbyte agent
-      const nyxbyteAgent = {
-        name: 'Nyxbyte',
-        description: 'AI sales assistant specialized in digital products',
-        role: 'sales',
-        knowledgeFileName: 'sales_manual.pdf',
-        image: agentImage // Using the imported image
-      };
+    if (isExistingStore) {
+      // Always consider the store as generated for resumed stores
+      setStoreGenerated(true);
       
-      setAgents([nyxbyteAgent]);
-    }
-    
-    // If productsLoaded is true, load the predefined products
-    if (productsLoaded === 'true') {
-      const predefinedProducts = [
+      // Clear the products and agents arrays for resumed stores
+      setProducts([]);
+      const predefinedAgents = [
         {
-          name: 'Dry Studio PETBRICK 65',
-          description: 'Premium mechanical keyboard',
-          price: '159.00',
-          link: 'https://example.com/petbrick65',
-          images: [prod1Image]
+          name: 'Felix',
+          images: [ag1Image],
+          role: "KOL"
         },
         {
-          name: 'AM INFINITY MOUSE',
-          description: 'Ergonomic gaming mouse',
-          price: '129.00',
-          link: 'https://example.com/infinity-mouse',
-          images: [prod2Image]
+          name: 'Allen',
+          images: [ag2Image],
+          role: "KOL"
         },
         {
-          name: 'CYBERBOARD Novel Project',
-          description: 'Limited edition mechanical keyboard',
-          price: '748.00',
-          link: 'https://example.com/cyberboard-novel',
-          images: [prod3Image]
+          name: 'Nomi',
+          images: [ag3Image],
+          role: "Sales"
         },
         {
-          name: 'CYBERBOARD R2',
-          description: 'Advanced mechanical keyboard',
-          price: '432.00',
-          link: 'https://example.com/cyberboard-r2',
-          images: [prod4Image]
-        },
-        {
-          name: 'AM RGB 65',
-          description: 'RGB backlit mechanical keyboard',
-          price: '568.00',
-          link: 'https://example.com/rgb-65',
-          images: [prod5Image]
-        },
-        {
-          name: 'AM AFA R2',
-          description: 'Premium keyboard with aluminum frame',
-          price: '646.00',
-          link: 'https://example.com/afa-r2',
-          images: [prod6Image]
-        },
-        {
-          name: 'AM Emptiness Phone Case',
-          description: 'Minimalist phone case',
-          price: '25.99',
-          link: 'https://example.com/emptiness-case',
-          images: [prod7Image]
+          name: 'St0ri',
+          images: [ag4Image],
+          role: "Sales"
         }
       ];
+      setAgents(predefinedAgents);
       
-      setProducts(predefinedProducts);
+      // Clear AI messages for resumed stores
+      const existingMessages = [
+        {
+          id: 1,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Welcome to your new virtual store! I\'m StoreAI, your all-in-one AI business assistant. I analyze your store\'s performance, provide actionable advice, remind you of important events, and much more.'
+        },
+        {
+          id: 2,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Would you like me to show you how to set up your store?',
+          actions: [
+            { label: 'Yes, please', value: 'yes' },
+            { label: 'I\'ll explore myself', value: 'no' }
+          ],
+          selectedAction: 'yes'
+        },
+        {
+          id: 10,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Here\'s how to set up your store:\n\n' +
+            '• **Add Products**: Select the Products tab on the right and add your items\n\n' +
+            '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
+            '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
+            '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
+            'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
+        },
+        {
+          id: 11,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Here\'s how to set up your store:\n\n' +
+            '• **Add Products**: Select the Products tab on the right and add your items\n\n' +
+            '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
+            '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
+            '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
+            'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
+        },
+        {
+          id: 12,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Here\'s how to set up your store:\n\n' +
+            '• **Add Products**: Select the Products tab on the right and add your items\n\n' +
+            '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
+            '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
+            '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
+            'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
+        },
+        {
+          id: 13,
+          name: 'StoreAI',
+          time: '3 weeks ago',
+          content: 'Here\'s how to set up your store:\n\n' +
+            '• **Add Products**: Select the Products tab on the right and add your items\n\n' +
+            '• **Create AI Agent**: Switch to the Agents tab to configure your store assistant\n\n' +
+            '• **Design Your Space**: Drag and drop both products and agents into your virtual store area\n\n' +
+            '• **Go Live**: Once everything is set up, click the Publish button above\n\n' +
+            'After publishing, I\'ll help analyze customer behavior and provide optimization recommendations.'
+        },
+        {
+          id: 9,
+          name: 'StoreAI',
+          time: '2 weeks ago',
+          content: 'Your store agent doesn’t seem to be helping users much. Maybe it’s too hidden or not helpful enough. Want to tweak it?',
+          actions: [
+            { label: 'Improve agent design', value: 'yes' },
+            { label: 'Ignore for now', value: 'no' }
+          ],
+          selectedAction: 'no'
+        },     
+        {
+          id: '9b',
+          name: 'StoreAI',
+          time: '2 weeks ago',
+          content: 'Got it. We’ll stay the course.'
+        },   
+        {
+          id: 8,
+          name: 'StoreAI',
+          time: '2 weeks ago',
+          content: 'You had a good number of first-time visitors last week, but very few came back. Want help making your store more memorable?',
+          actions: [
+            { label: 'Improve store appeal', value: 'yes' },
+            { label: 'Keep as is', value: 'no' }
+          ],
+          selectedAction: 'no'
+        },      
+        {
+          id: '8b',
+          name: 'StoreAI',
+          time: '2 weeks ago',
+          content: 'Alright, no changes made.'
+        },     
+        {
+          id: 3,
+          name: 'StoreAI',
+          time: '2 weeks ago',
+          content: 'It was Earth Day! Want me to apply a special eco-friendly setting to your store, including theme and agent behavior updates?',
+          actions: [
+            { label: 'Yes, make it green 🌱', value: 'yes' },
+            { label: 'Maybe next time', value: 'no' }
+          ],
+          selectedAction: 'no'
+        },
+        {
+          id: '3b',
+          name: 'StoreAI',
+          time: '1 weeks ago',
+          content: 'No problem! Keeping your current setup.'
+        },    
+        {
+          id: 4,
+          name: 'StoreAI',
+          time: '1 week ago',
+          content: 'Your store had very high average engagement duration—great sign! However, you don’t have any products yet. Want to add some to turn this attention into sales?',
+          actions: [
+            { label: 'Add products now', value: 'yes' },
+            { label: 'Remind me later', value: 'no' }
+          ],
+          selectedAction: 'no'
+        },
+        {
+          id: '4b',
+          name: 'StoreAI',
+          time: '1 weeks ago',
+          content: 'Got it. You can add products anytime.'
+        },   
+        {
+          id: 5,
+          name: 'StoreAI',
+          time: '1 week ago',
+          content: 'Your store engagement duration looks great, but visitor count is relatively low. I can help you write a promotional post for platforms like X or Reddit to boost exposure. Shall we?',
+          actions: [
+            { label: 'Yes, draft a post', value: 'yes' },
+            { label: 'I\'ll handle it myself', value: 'no' }
+          ],
+          selectedAction: 'yes'
+        },
+        {
+          id: '5b',
+          name: 'StoreAI',
+          time: '1 week ago',
+          content: `Great! I’ve drafted a post you can share on X or Reddit:<br/><br/>
+<blockquote style="border-left: 4px solid #ccc; padding-left: 1em; margin: 1em 0;">
+  ✨ Just launched my new virtual store!<br/>
+  It’s more than a shop — it’s an experience.<br/>
+  Step inside, meet my AI assistant, and explore a space where fantasy meets commerce.<br/><br/>
+  🛍️ Built with love using Storia<br/>
+  🔗 <a href='http://localhost:3000/store/12345' target='_blank'>http://localhost:3000/store/12345</a><br/><br/>
+  #ecommerce #virtualstore #AI #indiebiz #ShopDifferently
+</blockquote>`
+        },        
+        {
+          id: 6,
+          name: 'StoreAI',
+          time: '3 days ago',
+          content: 'Your agent "St0ri" is getting fewer interactions than most other agents. Want to either emphasize it more, or streamline by removing it?',
+          actions: [
+            { label: 'Feature it', value: 'yes111' },
+            { label: 'Remove it', value: 'yes' },
+            { label: 'Keep things as is', value: 'no' }
+          ]
+        },
+        {
+          id: 7,
+          name: 'StoreAI',
+          time: 'Today',
+          content: 'Your store engagement looks promising! If sales are following, I can assist with setting up third-party shipping tools to help you run things more smoothly.',
+          actions: [
+            { label: 'Set up shipping tools', value: 'yes222' },
+            { label: 'Not now', value: 'no' }
+          ]
+        }
+      ];
+      setAiMessages(existingMessages);
+      
+      // Enable publish button for resumed stores (they're already built)
+      setIsPublishEnabled(true);
+    } else {
+      // Original logic for non-resumed stores
+      setStoreGenerated(storeGeneratedValue === 'true');
+      setIsPublishEnabled(
+        storeGeneratedValue === 'true' && 
+        productsLoaded === 'true' && 
+        agentsGenerated === 'true'
+      );
+      
+      // Load agents and products if needed
+      if (agentsGenerated === 'true') {
+        // Create Nyxbyte agent
+        const nyxbyteAgent = {
+          name: 'Nyxbyte',
+          description: 'AI sales assistant specialized in digital products',
+          role: 'sales',
+          knowledgeFileName: 'sales_manual.pdf',
+          images: []
+        };
+        
+        setAgents([nyxbyteAgent]);
+      }
+      
+      if (productsLoaded === 'true') {
+        const predefinedProducts = [
+          {
+            name: 'Dry Studio PETBRICK 65',
+            description: 'Premium mechanical keyboard',
+            price: '159.00',
+            link: 'https://example.com/petbrick65',
+            images: [prod1Image]
+          },
+          {
+            name: 'AM INFINITY MOUSE',
+            description: 'Ergonomic gaming mouse',
+            price: '129.00',
+            link: 'https://example.com/infinity-mouse',
+            images: [prod2Image]
+          },
+          {
+            name: 'CYBERBOARD Novel Project',
+            description: 'Limited edition mechanical keyboard',
+            price: '748.00',
+            link: 'https://example.com/cyberboard-novel',
+            images: [prod3Image]
+          },
+          {
+            name: 'CYBERBOARD R2',
+            description: 'Advanced mechanical keyboard',
+            price: '432.00',
+            link: 'https://example.com/cyberboard-r2',
+            images: [prod4Image]
+          },
+          {
+            name: 'AM RGB 65',
+            description: 'RGB backlit mechanical keyboard',
+            price: '568.00',
+            link: 'https://example.com/rgb-65',
+            images: [prod5Image]
+          },
+          {
+            name: 'AM AFA R2',
+            description: 'Premium keyboard with aluminum frame',
+            price: '646.00',
+            link: 'https://example.com/afa-r2',
+            images: [prod6Image]
+          },
+          {
+            name: 'AM Emptiness Phone Case',
+            description: 'Minimalist phone case',
+            price: '25.99',
+            link: 'https://example.com/emptiness-case',
+            images: [prod7Image]
+          }
+        ];
+        
+        setProducts(predefinedProducts);
+      }
     }
   }, []);
 
@@ -470,14 +763,14 @@ function Main() {
             <div className="social-media-bar">
               <h3 className="section-title">CONNECT CHANNELS</h3>
               
-              {fromScratch ? (
+              {fromScratch || localStorage.getItem('isExistingStore') === 'true' ? (
                 <div className="empty-state">
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"></circle>
                     <line x1="12" y1="8" x2="12" y2="16"></line>
                     <line x1="8" y1="12" x2="16" y2="12"></line>
                   </svg>
-                  <p>No channels connected</p>
+                  <p>No channels connected</p>  
                   <button className="btn-outline">Connect Channel</button>
                 </div>
               ) : (
@@ -536,7 +829,11 @@ function Main() {
                 STORE AI ASSISTANT
               </h3>
               <div className="ai-assistant-container">
-                <div className="ai-messages">
+              <div 
+                className="ai-messages" 
+                ref={aiMessageBoxRef}
+                style={{ overflowY: 'auto' }}
+              >
                   {aiMessages.map(message => (
                     <div className="ai-message" key={message.id}>
                       <div className="ai-message-header">
@@ -564,7 +861,7 @@ function Main() {
                             {message.actions.map((action, index) => (
                               <button 
                                 key={index}
-                                className={`ai-action-button ${action.value === 'yes' ? 'accept' : 'reject'} ${message.selectedAction === action.value ? 'selected' : ''} ${message.selectedAction && message.selectedAction !== action.value ? 'not-selected' : ''}`}
+                                className={`ai-action-button ${action.value.includes('yes') ? 'accept' : 'reject'} ${message.selectedAction === action.value ? 'selected' : ''} ${message.selectedAction && message.selectedAction !== action.value ? 'not-selected' : ''}`}
                                 onClick={() => handleAiAction(message.id, action.value)}
                                 disabled={message.selectedAction !== undefined}
                               >
@@ -624,8 +921,57 @@ function Main() {
                   onDrop={handleDrop}
                   onDragOver={handleDragOver}
                 >
+                  {highlightProcessing && (
+                    <div 
+                      style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        zIndex: 20,
+                        backdropFilter: 'blur(3px)'
+                      }}
+                    >
+                      <svg 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="70" 
+                        height="70" 
+                        viewBox="0 0 24 24" 
+                        fill="none" 
+                        stroke="white" 
+                        strokeWidth="2" 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round"
+                        className="highlight-spinner"
+                      >
+                        <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                      </svg>
+                      <p style={{
+                        color: 'white',
+                        marginTop: '16px',
+                        fontSize: '20px',
+                        fontWeight: '500',
+                        textAlign: 'center'
+                      }}>
+                        Reimagining Agent St0ri<br/>
+                        <span style={{ fontSize: '16px', opacity: 0.8 }}>Making your agent more visible to visitors</span>
+                      </p>
+                    </div>
+                  )}
                   <video
-                    src={bgVideo}
+                    src={
+                      highlightProcessing ? 
+                        (localStorage.getItem('isExistingStore') === 'true' ? bg5Video : bgVideo) :
+                        localStorage.getItem('highlightedAgent') === 'true' ? 
+                          bg51Video : 
+                          (localStorage.getItem('isExistingStore') === 'true' ? bg5Video : bgVideo)
+                    }
                     autoPlay
                     loop
                     muted
@@ -683,11 +1029,11 @@ function Main() {
               <div className="ad-stats">
                 <div className="stat-card">
                   <h4>VISITORS</h4>
-                  <span className="stat-value">0</span>
+                  <span className="stat-value">{localStorage.getItem('isExistingStore') === 'true' ? '188' : '0'}</span>
                 </div>
                 <div className="stat-card">
                   <h4>ENGAGEMENT</h4>
-                  <span className="stat-value">N/A</span>
+                  <span className="stat-value">{localStorage.getItem('isExistingStore') === 'true' ? '16m 39s' : 'N/A'}</span>
                 </div>
                 <div className="stat-card">
                   <h4>CONVERSION</h4>
@@ -821,7 +1167,7 @@ function Main() {
                             onClick={() => navigate('/agent')}
                           >
                             <img 
-                              src={agentImage} 
+                              src={agent.images[0]? agent.images[0]: agentImage} 
                               alt={agent.name} 
                               style={{
                                 width: '50px',
